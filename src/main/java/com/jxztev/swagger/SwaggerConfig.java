@@ -29,7 +29,7 @@ public class SwaggerConfig {
     private ApiInfo buildApiInf() {
         return new ApiInfoBuilder().title("JXSL改造API平台").termsOfServiceUrl("")
                 .description("集API在线测试 <a href='http://localhost:9090/jxztev/druid/index.html' target='_blank'>[API性能监控页面]</a> 于一体")
-                .contact(new Contact("减灾事业部", "", "liangbimiao@piesat.cn")).build();
+                .contact(new Contact("LBM", "", "liangbimiao@piesat.cn")).build();
 
     }
 }
