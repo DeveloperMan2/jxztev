@@ -19,17 +19,17 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-	@Bean
-	public Docket buildDocket() {
-		return new Docket(DocumentationType.SWAGGER_2).apiInfo(buildApiInf()).select()
-				//.apis(RequestHandlerSelectors.basePackage("com.jxztev.controller"))// controller路径
-				.paths(PathSelectors.any()).build();
-	}
+    @Bean
+    public Docket buildDocket() {
+        return new Docket(DocumentationType.SWAGGER_2).apiInfo(buildApiInf()).select()
+                //.apis(RequestHandlerSelectors.basePackage("com.jxztev.controller"))// controller路径
+                .paths(PathSelectors.any()).build();
+    }
 
-	private ApiInfo buildApiInf() {
-		return new ApiInfoBuilder().title("JXSL改造API平台").termsOfServiceUrl("")
-				.description("集API在线查看、测试于一体")
-				.contact(new Contact("减灾事业部", "", "liangbimiao@piesat.cn")).build();
+    private ApiInfo buildApiInf() {
+        return new ApiInfoBuilder().title("JXSL改造API平台").termsOfServiceUrl("")
+                .description("集API在线测试 <a href='http://localhost:9090/jxztev/druid/index.html' target='_blank'>[API性能监控页面]</a> 于一体")
+                .contact(new Contact("减灾事业部", "", "liangbimiao@piesat.cn")).build();
 
-	}
+    }
 }
