@@ -17,27 +17,29 @@
 
     <select id="rainSummarizeHandler" parameterType="com.jxztev.entity.acs4sql.RainSummarizeRequest"
             resultMap="RainSummarizeResultMap">
-        <![CDATA[
-            select *
-              from (select A.stcd,
-                           (select ADDVNM
-                              from ST_STBPRP_B B, ST_ADDVCD_D D
-                             where B.ADDVCD = D.ADDVCD
-                               and A.STCD = B.STCD) as cnnm,
-                           (select STNM from ST_STBPRP_B where STCD = A.STCD) as stnm,
-                           sum(nvl(drp, 0)) maxRain
-                      from (select *
-                              from ST_STBPRP_B
-                             where ADDVCD > 360000
-                               and ADDVCD <= 369900) A
-                      left join ST_PPTN_R B
-                        on A.stcd = B.stcd
-                     where tm > to_date(#{tm}, 'yyyy-mm-dd hh:mi:ss')
-                       and tm <= (sysdate + 1 / 24)
-                     group by A.stcd
-                     order by maxrain desc)
-             where maxrain > #{maxrain}
-               and rownum < 100
-            ]]>
-    </select>
+    <![CDATA[
+
+                select *
+                  from (select A.stcd as stcd,
+                               (select ADDVNM
+                                  from ST_STBPRP_B B, ST_ADDVCD_D D
+                                 where B.ADDVCD = D.ADDVCD
+                                   and A.STCD = B.STCD) as cnnm,
+                               (select STNM from ST_STBPRP_B where STCD = A.STCD) as stnm,
+                               sum(nvl(drp, 0)) as maxRain
+                          from (select *
+                                  from ST_STBPRP_B
+                                 where ADDVCD > 360000
+                                   and ADDVCD <= 369900) A
+                          left join ST_PPTN_R B
+                            on A.stcd = B.stcd
+                         where tm > to_date(#{tm}, 'yyyy-mm-dd hh:mi:ss')
+                           and tm <= (sysdate + 1 / 24)
+                         group by A.stcd
+                         order by maxrain desc)
+                 where maxrain > #{maxrain}
+                   and rownum < 100
+
+        ]]>
+</select>
 </mapper>

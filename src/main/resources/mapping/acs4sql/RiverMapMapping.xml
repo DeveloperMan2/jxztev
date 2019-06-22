@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jxztev.dao.acs4sql.IRiverMapDao">
+    <resultMap id="RiverMapResultMap" type="com.jxztev.entity.acs4sql.RiverMapResponse">
+        <result property="stcd" column="stcd" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="stnm" column="stnm" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="bsnm" column="bsnm" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="county" column="county" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="tm" column="tm" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="z" column="z" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="cwrz" column="cwrz" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="q" column="q" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="wptn" column="wptn" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="wrz" column="wrz" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="obhtz" column="obhtz" javaType="String"
+                jdbcType="VARCHAR"/>
+        <result property="obhtztm" column="obhtztm" javaType="String"
+                jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="riverMapHandler" parameterType="com.jxztev.entity.acs4sql.RiverMapRequest"
+            resultMap="RiverMapResultMap">
+    <![CDATA[
+
+                 select a.stcd as stcd,a.stnm as stnm,a.bsnm as bsnm,a.county as county,a.tm as tm,b.z as z,b.z - c.wrz as cwrz,b.q as q,b.wptn as wptn,c.wrz as wrz,c.obhtz as obhtz,to_char(c.obhtztm,'yyyy-mm-dd hh:mi:ss') as obhtztm from ( select stcd,stnm,bsnm,( select max(tm) from st_river_r where stcd = p.stcd and tm >= to_date(#{bgTm},'yyyy-mm-dd hh:mi:ss')
+                           and tm < to_date(#{endTm},'yyyy-mm-dd hh:mi:ss')) as tm,addvnm as county from st_stbprp_b p,st_addvcd_d d where p.addvcd = d.addvcd and
+                           ]]>
+                           stcd in
+                           <foreach collection="stationsList" index="index" item="item" open="(" close=")" separator=",">
+                            #{item}
+                            </foreach> ) a
+                            left join st_river_r b on a.stcd = b.stcd and a.tm = b.tm left join st_rvfcch_b c on a.stcd = c.stcd order by cwrz desc
+
+
+</select>
+</mapper>
