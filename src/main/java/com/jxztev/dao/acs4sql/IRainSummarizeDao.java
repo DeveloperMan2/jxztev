@@ -12,4 +12,5 @@ import com.jxztev.entity.acs4sql.RainSummarizeRequest;
 @Repository("rainSummarizeDao")
 public interface IRainSummarizeDao {
     List<RainSummarizeResponse> rainSummarizeHandler(RainSummarizeRequest rainSummarizeRequestParams);
+
 }

@@ -18,13 +18,13 @@ public class RainSummarizeRequest {
     }
 
     @ApiModelProperty(value = "maxrain,这是一个别名变量。")
-    private String maxrain;
+    private Float maxrain;
 
-    public String getMaxrain() {
+    public Float getMaxrain() {
         return maxrain;
     }
 
-    public void setMaxrain(String maxrain) {
+    public void setMaxrain(Float maxrain) {
         this.maxrain = maxrain;
     }
 }

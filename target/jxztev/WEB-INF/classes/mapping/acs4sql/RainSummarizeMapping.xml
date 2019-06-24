@@ -11,8 +11,8 @@
                 jdbcType="VARCHAR"/>
         <result property="stnm" column="stnm" javaType="String"
                 jdbcType="VARCHAR"/>
-        <result property="maxrain" column="maxrain" javaType="String"
-                jdbcType="VARCHAR"/>
+        <result property="maxrain" column="maxrain" javaType="Float"
+                jdbcType="REAL"/>
     </resultMap>
 
     <select id="rainSummarizeHandler" parameterType="com.jxztev.entity.acs4sql.RainSummarizeRequest"

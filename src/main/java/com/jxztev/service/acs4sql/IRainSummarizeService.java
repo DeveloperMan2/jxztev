@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSONObject;
  * @desc RainSummarize接口
  */
 public interface IRainSummarizeService {
-    JSONObject rainSummarizeHandler(RainSummarizeRequest rainSummarizeRequestParams);
+    JSONObject rainSummarizeHandler();
 
 }
 
