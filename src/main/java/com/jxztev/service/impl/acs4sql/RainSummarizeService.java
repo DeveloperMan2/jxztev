@@ -9,6 +9,7 @@ import com.jxztev.service.acs4sql.IRainSummarizeService;
 import com.jxztev.utils.DataFormatUtils;
 import com.ztev.commons.date.DateUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,8 @@ import java.util.*;
 @Service("rainSummarizeService")
 @Transactional(rollbackFor = Exception.class)
 public class RainSummarizeService implements IRainSummarizeService {
+
+    private static Logger logger = Logger.getLogger(RainSummarizeService.class);
     public static Integer DEFAULT_PERIOD = Integer.valueOf(24);
     public static String JAVA_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static String ORACLE_DATE_PATTERN = "yyyy-mm-dd hh24:mi:ss";
@@ -57,18 +60,22 @@ public class RainSummarizeService implements IRainSummarizeService {
         try {
             //获取雨情概述
             String rain = getRainSummary("24");
+            logger.info(rain);
             //获取水库水情
             String reservoir = getReservoirSummary();
+            logger.info(reservoir);
             //获取河道水情
             String river = getRiverSummary();
+           logger.debug(river);
             JSONObject data = new JSONObject();
             data.put("rain", rain);
-            data.put("reservoir",reservoir);
+           data.put("reservoir",reservoir);
             data.put("river",river);
             jo.put("data", data);
             jo.put("status", 1);// 1-成功， 0-失败
             jo.put("msg", "执行成功");
         } catch (Exception e) {
+            logger.error("",e);
             jo.put("data", null);
             jo.put("status", 0);// 1-成功， 0-失败
             jo.put("msg", e.getMessage());// msg-失败信息
@@ -85,13 +92,14 @@ public class RainSummarizeService implements IRainSummarizeService {
         } catch (Exception localException1) {
         }
         try {
-            // bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            bgDate = "2019-06-15 08:00:00";
+            bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+            //bgDate = "2019-06-15 08:00:00";
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(0f);
             list = rainSummarizeDao.findCountyRainList(rainSummarizeRequestParams);
         } catch (Exception e) {
+          logger.error("",e);
         }
         return list;
     }
@@ -111,13 +119,14 @@ public class RainSummarizeService implements IRainSummarizeService {
             rainFlag = DEFAULT_RAIN_FLAG;
         }
         try {
-           // bgDate = DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            bgDate = "2019-06-15 08:00:00";
+            bgDate = DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+            //bgDate = "2019-06-15 08:00:00";
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(rainFlag);
             list = rainSummarizeDao.findCountyRainList(rainSummarizeRequestParams);
         } catch (Exception e) {
+            logger.error("",e);
         }
         return list;
     }
@@ -286,9 +295,10 @@ public class RainSummarizeService implements IRainSummarizeService {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         ReservoirMapRequest reservoirMapRequestParams = new ReservoirMapRequest();
-       // reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
-        reservoirMapRequestParams.setBgTm("2019-06-15 08:00:00");
+        reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
+        //reservoirMapRequestParams.setBgTm("2019-06-23 16:00:00");
         reservoirMapRequestParams.setEndTm(formatter.format(endTm));
+        reservoirMapRequestParams.setMd( DateUtils.getTodayString("MMdd"));
 
         List<String> reservoirStationsList = new ArrayList<>();
         if (null != reservoirStations && !reservoirStations.equals("")) {
@@ -326,8 +336,8 @@ public class RainSummarizeService implements IRainSummarizeService {
                     reservoirItem.setHTM(DateUtils.formatDate(date, "H点"));
                     reservoirItem.setTm(DateUtils.formatDate(date, "M月d日 H点m分"));
                 }
-            } catch (ParseException px) {
-                px.printStackTrace();
+            } catch (ParseException e) {
+                logger.error("",e);
             }
         }
         return reservoirMapResponseList;
@@ -344,7 +354,7 @@ public class RainSummarizeService implements IRainSummarizeService {
                     }
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                logger.error("",e);
             }
         }
         return overTopFLZ;
@@ -399,8 +409,8 @@ public class RainSummarizeService implements IRainSummarizeService {
         Date endTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", 0, 1), "yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         RiverMapRequest riverMapRequestParams = new RiverMapRequest();
-       // riverMapRequestParams.setBgTm(formatter.format(bgTm));
-        riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
+        riverMapRequestParams.setBgTm(formatter.format(bgTm));
+        //riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
         riverMapRequestParams.setEndTm(formatter.format(endTm));
 
         List<String> riverStationsList = new ArrayList<>();
@@ -425,8 +435,8 @@ public class RainSummarizeService implements IRainSummarizeService {
                     riverItem.setHTM(DateUtils.formatDate(date, "H点"));
                     riverItem.setTm(DateUtils.formatDate(date, "M月d日 H点m分"));
                 }
-            } catch (ParseException px) {
-                px.printStackTrace();
+            } catch (ParseException e) {
+                logger.error("",e);
             }
         }
         return riverMapResponseList;
@@ -443,7 +453,7 @@ public class RainSummarizeService implements IRainSummarizeService {
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("",e);
             }
         }
         return overTopWrz;

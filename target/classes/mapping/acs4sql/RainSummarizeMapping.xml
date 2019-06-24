@@ -35,7 +35,7 @@
                                    and ADDVCD <= 369900) A
                           left join ST_PPTN_R B
                             on A.stcd = B.stcd
-                         where tm > to_date(#{tm}, 'yyyy-mm-dd hh:mi:ss')
+                         where tm > to_date(#{tm}, 'yyyy-mm-dd hh24:mi:ss')
                            and tm <= (sysdate + 1 / 24)
                          group by A.stcd
                          order by maxrain desc)
@@ -59,7 +59,7 @@
                                and ADDVCD <= 369900) A
                       left join ST_PPTN_R B
                         on A.stcd = B.stcd
-                       and tm > to_date(#{tm}, 'yyyy-mm-dd hh:mi:ss')
+                       and tm > to_date(#{tm}, 'yyyy-mm-dd hh24:mi:ss')
                        and tm <=(sysdate + 1/24)
                      group by A.stcd) C
               left join ST_STBPRP_B D

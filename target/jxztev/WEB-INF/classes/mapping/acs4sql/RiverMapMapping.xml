@@ -35,8 +35,8 @@
             resultMap="RiverMapResultMap">
     <![CDATA[
 
-                 select a.stcd as stcd,a.stnm as stnm,a.bsnm as bsnm,a.county as county,a.tm as tm,b.z as z,b.z - c.wrz as cwrz,b.q as q,b.wptn as wptn,c.wrz as wrz,c.obhtz as obhtz,to_char(c.obhtztm,'yyyy-mm-dd hh:mi:ss') as obhtztm from ( select stcd,stnm,bsnm,( select max(tm) from st_river_r where stcd = p.stcd and tm >= to_date(#{bgTm},'yyyy-mm-dd hh:mi:ss')
-                           and tm < to_date(#{endTm},'yyyy-mm-dd hh:mi:ss')) as tm,addvnm as county from st_stbprp_b p,st_addvcd_d d where p.addvcd = d.addvcd and
+                 select a.stcd as stcd,a.stnm as stnm,a.bsnm as bsnm,a.county as county,a.tm as tm,b.z as z,b.z - c.wrz as cwrz,b.q as q,b.wptn as wptn,c.wrz as wrz,c.obhtz as obhtz,to_char(c.obhtztm,'yyyy-mm-dd hh24:mi:ss') as obhtztm from ( select stcd,stnm,bsnm,( select max(tm) from st_river_r where stcd = p.stcd and tm >= to_date(#{bgTm},'yyyy-mm-dd hh24:mi:ss')
+                           and tm < to_date(#{endTm},'yyyy-mm-dd hh24:mi:ss')) as tm,addvnm as county from st_stbprp_b p,st_addvcd_d d where p.addvcd = d.addvcd and
                            ]]>
                            stcd in
                            <foreach collection="stationsList" index="index" item="item" open="(" close=")" separator=",">
