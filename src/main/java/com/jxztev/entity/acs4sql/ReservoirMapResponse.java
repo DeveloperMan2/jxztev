@@ -158,5 +158,35 @@ public class ReservoirMapResponse{
 	public void setBlrz(String blrz) {
 		this.blrz = blrz;
 	}
+
+	public String getHTM() {
+		return HTM;
+	}
+
+	public void setHTM(String HTM) {
+		this.HTM = HTM;
+	}
+	@ApiModelProperty(value = "HTM,这是一个别名变量。")
+	public String HTM;
+
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
+
+	private String style;
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	private String img;
 	
 }

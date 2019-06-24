@@ -1,21 +1,22 @@
 package com.jxztev.service.impl.acs4sql;
 
-import com.jxztev.entity.acs4sql.RainSummarizeResponse;
+import com.alibaba.fastjson.JSONObject;
+import com.jxztev.dao.acs4sql.IRainSummarizeDao;
+import com.jxztev.dao.acs4sql.IReservoirMapDao;
+import com.jxztev.dao.acs4sql.IRiverMapDao;
+import com.jxztev.entity.acs4sql.*;
+import com.jxztev.service.acs4sql.IRainSummarizeService;
+import com.jxztev.utils.DataFormatUtils;
+import com.ztev.commons.date.DateUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jxztev.service.acs4sql.IRainSummarizeService;
-import com.jxztev.dao.acs4sql.IRainSummarizeDao;
-
-import com.alibaba.fastjson.JSONArray;
-import com.jxztev.entity.acs4sql.RainSummarizeRequest;
-
-
-import com.alibaba.fastjson.JSONObject;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -29,9 +30,27 @@ public class RainSummarizeService implements IRainSummarizeService {
     public static String ORACLE_DATE_PATTERN = "yyyy-mm-dd hh24:mi:ss";
     public static Float DEFAULT_RAIN_FLAG = Float.valueOf(50.0F);
 
+    //河道包含的站点
+    @Value("#{systemConfig[riverway_stations]}")
+    private String riverwayStations;
+
+    //水库包含的站点
+    @Value("#{systemConfig[reservoir_stations]}")
+    private String reservoirStations;
+
     @Autowired
     @Qualifier("rainSummarizeDao")
     private IRainSummarizeDao rainSummarizeDao;
+
+    @Autowired
+    @Qualifier("reservoirMapDao")
+    private IReservoirMapDao reservoirMapDao;
+
+
+    @Autowired
+    @Qualifier("riverMapDao")
+    private IRiverMapDao riverMapDao;
+
 
     public JSONObject rainSummarizeHandler() {
         JSONObject jo = new JSONObject();
@@ -39,9 +58,13 @@ public class RainSummarizeService implements IRainSummarizeService {
             //获取雨情概述
             String rain = getRainSummary("24");
             //获取水库水情
+            String reservoir = getReservoirSummary();
             //获取河道水情
+            String river = getRiverSummary();
             JSONObject data = new JSONObject();
-            data.put("rain",rain);
+            data.put("rain", rain);
+            data.put("reservoir",reservoir);
+            data.put("river",river);
             jo.put("data", data);
             jo.put("status", 1);// 1-成功， 0-失败
             jo.put("msg", "执行成功");
@@ -54,8 +77,6 @@ public class RainSummarizeService implements IRainSummarizeService {
     }
 
     public List<RainSummarizeResponse> getCountyRainList(String hourStr) {
-
-        long bt = System.currentTimeMillis();
         List<RainSummarizeResponse> list = new ArrayList();
         String bgDate = null;
         int INT_HOUR = DEFAULT_PERIOD.intValue();
@@ -64,20 +85,15 @@ public class RainSummarizeService implements IRainSummarizeService {
         } catch (Exception localException1) {
         }
         try {
-           // bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            bgDate =  "2019-06-15 08:00:00";
+            // bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+            bgDate = "2019-06-15 08:00:00";
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(0f);
-            list = rainSummarizeDao.rainSummarizeHandler(rainSummarizeRequestParams);
+            list = rainSummarizeDao.findCountyRainList(rainSummarizeRequestParams);
         } catch (Exception e) {
         }
         return list;
-    }
-
-    public Boolean isRainOver() {
-        if (getStationRainList().size() > 0) return Boolean.valueOf(true);
-        return Boolean.valueOf(false);
     }
 
     public List<RainSummarizeResponse> getStationRainList() {
@@ -95,11 +111,12 @@ public class RainSummarizeService implements IRainSummarizeService {
             rainFlag = DEFAULT_RAIN_FLAG;
         }
         try {
-            bgDate = DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+           // bgDate = DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+            bgDate = "2019-06-15 08:00:00";
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(rainFlag);
-            list = rainSummarizeDao.rainSummarizeHandler(rainSummarizeRequestParams);
+            list = rainSummarizeDao.findCountyRainList(rainSummarizeRequestParams);
         } catch (Exception e) {
         }
         return list;
@@ -138,9 +155,9 @@ public class RainSummarizeService implements IRainSummarizeService {
 
     public String getRainSummary(String hourStr) {
         List<RainSummarizeResponse> list = getCountyRainList(hourStr);
-        StringBuffer sb = new StringBuffer("");
-        StringBuffer brsb = new StringBuffer("");
-        StringBuffer dbrsb = new StringBuffer("");
+        StringBuffer sb = new StringBuffer();
+        StringBuffer brsb = new StringBuffer();
+        StringBuffer dbrsb = new StringBuffer();
         sb.append(DateFormatUtils.format(new Date(System.currentTimeMillis() - 86400000L), "M月d日H时"));
         sb.append("~");
         sb.append(DateFormatUtils.format(new Date(System.currentTimeMillis()), "M月d日H时"));
@@ -217,6 +234,219 @@ public class RainSummarizeService implements IRainSummarizeService {
         }
         sb.append("。");
         return sb.toString();
+    }
+
+    /**************水库水情概述****************/
+
+    private String getReservoirSummary(){
+        String reservoir;
+        List<ReservoirMapResponse> reservoirMapResponseList = queryReservoirMapList();
+        List<ReservoirMapResponse> overTopFlz = getOverTopFLZ(reservoirMapResponseList);
+        StringBuffer reservoirSbf = new StringBuffer();
+        ReservoirMapResponse reservoirMapResponse = null;
+        for( int i = 0; i < overTopFlz.size(); i++ ){
+            reservoirMapResponse = overTopFlz.get(i);
+            if(i > 0){
+                reservoirSbf.append("；<br>　　　　　");//不是第一个则加；分隔
+            }
+            reservoirSbf.append(reservoirMapResponse.getCounty())
+                    .append(" <font color='red'>").append(reservoirMapResponse.getStnm()).append("水库</font>").append(reservoirMapResponse.getTm())
+                    .append("超汛限水位").append("<font color='red'>").append(reservoirMapResponse.getCfsltdz()).append("</font>").append("米");
+        }
+        if( overTopFlz.size() == 1 ){
+            reservoir = reservoirSbf.toString();
+        }else if( overTopFlz.size() > 1 ){
+            reservoir = "有<font color='red'>" + overTopFlz.size() + "</font>个水库超汛限，"  + reservoirSbf.toString() ;
+        }else{
+            if(reservoirMapResponseList.size() > 0){
+                reservoirMapResponse = reservoirMapResponseList.get(0);
+                reservoirSbf = new StringBuffer();
+                reservoirSbf.append("各大中型水库均在汛限水位以下，其中离汛限水位最近的是")
+                        .append(reservoirMapResponse.getCounty()).append(" ").append(reservoirMapResponse.getStnm()).append("水库");
+                if( reservoirMapResponse.getCfsltdz() != null ){
+                    reservoirSbf.append("，").append(reservoirMapResponse.getTm()).append("比汛限水位").append(reservoirMapResponse.getCfsltdz()).append("米");
+                }
+                reservoir = reservoirSbf.toString();
+            }else{
+                reservoir = "系统暂无水库水情数据";
+            }
+        }
+        reservoir = reservoir + "。";
+        return reservoir;
+    }
+
+
+    private  List<ReservoirMapResponse> queryReservoirMapList() {
+        Map<String, String> mapSS = new HashMap();
+        mapSS.put("4", "↓");
+        mapSS.put("5", "↑");
+        mapSS.put("6", "—");
+        Date bgTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", -1, 0), "yyyy-MM-dd HH:mm:ss");
+        Date endTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", 0, 1), "yyyy-MM-dd HH:mm:ss");
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        ReservoirMapRequest reservoirMapRequestParams = new ReservoirMapRequest();
+       // reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
+        reservoirMapRequestParams.setBgTm("2019-06-15 08:00:00");
+        reservoirMapRequestParams.setEndTm(formatter.format(endTm));
+
+        List<String> reservoirStationsList = new ArrayList<>();
+        if (null != reservoirStations && !reservoirStations.equals("")) {
+            for (String v : reservoirStations.split(",")) {
+                reservoirStationsList.add(v);
+            }
+            reservoirMapRequestParams.setStationsList(reservoirStationsList);
+        }
+        List<ReservoirMapResponse> reservoirMapResponseList = reservoirMapDao.reservoirMapHandler(reservoirMapRequestParams);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //加上时间
+        for (ReservoirMapResponse reservoirItem : reservoirMapResponseList) {
+            reservoirItem.setStnm(reservoirItem.getStnm().trim().replaceAll("/*", "").replaceAll("水库", ""));
+            reservoirItem.setRz(DataFormatUtils.getRoundString(reservoirItem.getRz(), 2));
+            reservoirItem.setFfsltdz(DataFormatUtils.getRoundString(reservoirItem.getFfsltdz(), 2));
+            reservoirItem.setBfsltdz(DataFormatUtils.getRoundString(reservoirItem.getBfsltdz(), 2));
+            reservoirItem.setFsltdz(DataFormatUtils.getRoundString(reservoirItem.getFsltdz(), 2));
+
+            reservoirItem.setInq(DataFormatUtils.getValidString(reservoirItem.getInq(), 3));
+            reservoirItem.setOtq(DataFormatUtils.getValidString(reservoirItem.getOtq(), 3));
+            reservoirItem.setW(DataFormatUtils.getValidString(reservoirItem.getW(), 3));
+            reservoirItem.setStyle("normal");
+            reservoirItem.setImg("normal.gif");
+            reservoirItem.setRwptn(mapSS.get(reservoirItem.getRwptn()));
+            if (reservoirItem.getCfsltdz() != null) {
+                reservoirItem.setCfsltdz(DataFormatUtils.getRoundString(DataFormatUtils.getDouble(reservoirItem.getCfsltdz()), 2));
+                if (DataFormatUtils.getDouble(reservoirItem.getCfsltdz()).doubleValue() >= 0.0D) {
+                    reservoirItem.setStyle("warn");
+                    reservoirItem.setImg("alarm.gif");
+                }
+            }
+            //必须捕获异常
+            try {
+                if(reservoirItem.getTm() != null){
+                    Date date = simpleDateFormat.parse(reservoirItem.getTm());
+                    reservoirItem.setHTM(DateUtils.formatDate(date, "H点"));
+                    reservoirItem.setTm(DateUtils.formatDate(date, "M月d日 H点m分"));
+                }
+            } catch (ParseException px) {
+                px.printStackTrace();
+            }
+        }
+        return reservoirMapResponseList;
+    }
+
+    public List<ReservoirMapResponse> getOverTopFLZ(List<ReservoirMapResponse> list) {
+        List<ReservoirMapResponse> overTopFLZ = new ArrayList<>();
+        for (ReservoirMapResponse reservoir : list) {
+            try {
+                if (reservoir.getCfsltdz() != null) {
+                    double CWRZ = Double.valueOf(reservoir.getCfsltdz()).doubleValue();
+                    if (CWRZ >= 0.0D) {
+                        overTopFLZ.add(reservoir);
+                    }
+                }
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+        return overTopFLZ;
+    }
+
+
+    /*******************河道水情概述*********************/
+
+    private String getRiverSummary() {
+        String riverway;
+        List<RiverMapResponse> riverMapResponseList = queryRiverMapList();
+        List<RiverMapResponse> overTopWrz = getOverTopWrz(riverMapResponseList);
+        StringBuffer riverSbf = new StringBuffer();
+        RiverMapResponse riverMapResponse = null;
+        for( int i = 0; i < overTopWrz.size(); i++ ){
+            riverMapResponse = overTopWrz.get(i);
+            if(i > 0){
+                riverSbf.append("；<br>　　　　　");//不是第一个则加；分隔
+            }
+            riverSbf.append(riverMapResponse.getCounty())
+                    .append(" <font color='red'>").append(riverMapResponse.getStnm()).append("站</font>").append(riverMapResponse.getTm())
+                    .append("超警戒水位").append("<font color='red'>").append(riverMapResponse.getCwrz()).append("</font>").append("米");
+        }
+        if( overTopWrz.size() == 1 ){
+            riverway = riverSbf.toString();
+        }else if( overTopWrz.size() > 1 ){
+            riverway = "有<font color='red'>" + overTopWrz.size() + "</font>个站超警戒，" + riverSbf.toString() ;
+        }else{
+            if(riverMapResponseList.size() > 0){
+                riverMapResponse = riverMapResponseList.get(0);
+                riverSbf = new StringBuffer();
+                riverSbf.append("各江河重点站均在警戒水位以下，其中离警戒水位最近的是")
+                        .append(riverMapResponse.getCounty()).append(" ").append(riverMapResponse.getStnm()).append("站");
+                if(riverMapResponse.getCwrz() != null ){
+                    riverSbf.append("，").append(riverMapResponse.getTm()).append("比警戒水位").append(riverMapResponse.getCwrz()).append("米");
+                }
+                riverway = riverSbf.toString();
+            }else{
+                riverway = "系统暂无河道水情数据";
+            }
+        }
+        riverway = riverway + "。";
+        return riverway;
+    }
+
+    private  List<RiverMapResponse> queryRiverMapList() {
+        Map<String, String> mapSS = new HashMap();
+        mapSS.put("4", "↓");
+        mapSS.put("5", "↑");
+        mapSS.put("6", "—");
+        Date bgTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", -1, 0), "yyyy-MM-dd HH:mm:ss");
+        Date endTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", 0, 1), "yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        RiverMapRequest riverMapRequestParams = new RiverMapRequest();
+       // riverMapRequestParams.setBgTm(formatter.format(bgTm));
+        riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
+        riverMapRequestParams.setEndTm(formatter.format(endTm));
+
+        List<String> riverStationsList = new ArrayList<>();
+        if (null != riverwayStations && !riverwayStations.equals("")) {
+            for (String v : riverwayStations.split(",")) {
+                riverStationsList.add(v);
+            }
+            riverMapRequestParams.setStationsList(riverStationsList);
+        }
+        List<RiverMapResponse> riverMapResponseList = riverMapDao.riverMapHandler(riverMapRequestParams);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //加上时间
+        for (RiverMapResponse riverItem : riverMapResponseList) {
+            riverItem.setStnm(riverItem.getStnm().trim());
+            riverItem.setZ(DataFormatUtils.getRoundString(riverItem.getZ(), 2));
+            riverItem.setQ(DataFormatUtils.getValidString(riverItem.getQ(), 3));
+            riverItem.setWrz(DataFormatUtils.getRoundString(riverItem.getWrz(), 2));
+            riverItem.setObhtz(DataFormatUtils.getRoundString(riverItem.getObhtz(), 2));
+            //必须捕获异常
+            try {
+                if (riverItem.getTm() != null) {
+                    Date date = simpleDateFormat.parse(riverItem.getTm());
+                    riverItem.setHTM(DateUtils.formatDate(date, "H点"));
+                    riverItem.setTm(DateUtils.formatDate(date, "M月d日 H点m分"));
+                }
+            } catch (ParseException px) {
+                px.printStackTrace();
+            }
+        }
+        return riverMapResponseList;
+    }
+
+    public List<RiverMapResponse> getOverTopWrz(List<RiverMapResponse> list) {
+        List<RiverMapResponse> overTopWrz = new ArrayList<>();
+        for (RiverMapResponse riverMapResponse : list) {
+            try {
+                if (riverMapResponse.getCwrz() != null) {
+                    double CWRZ = Double.valueOf(riverMapResponse.getCwrz()).doubleValue();
+                    if (CWRZ >= 0.0D) {
+                        overTopWrz.add(riverMapResponse);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return overTopWrz;
     }
 
 }
