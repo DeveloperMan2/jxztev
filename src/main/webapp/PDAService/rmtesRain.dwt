@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+﻿<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="refresh" content="300"> 
+<link rel="stylesheet" href="images/SimpleBlog.css" type="text/css">
+<link rel="stylesheet" href="images/table.css" type="text/css">
+<title>雨量预警信息--江西省山洪灾害预警系统暴雨预警</title>
+</head>
+<body>
+<!-- Wrap -->
+<div id="wrap">
+<!-- Header -->
+<div id="header"></div>
+<!-- menu -->
+<div id="menu">
+	<ul>
+		<li id='current'><a href="rmtesRain.html"><span>暴雨预警信息</span></a></li>
+		<li ><a href="http://fx.jxsl.gov.cn:81/metproduct/data/weather/word/index.html" target="_blank"><span>文字预报</span></a></li>
+		<li ><a href="http://fx.jxsl.gov.cn:81/metproduct/data/weather/flash" target="_blank"><span>城市天气预报</span></a></li>
+		<li ><a href="http://fx.jxsl.gov.cn:81/metproduct/cloudMap.html" target="_blank"><span>卫星云图</span></a></li>
+		<li ><a href="http://fx.jxsl.gov.cn:81/metproduct/data/typhoon" target="_blank"><span>台风路径</span></a></li>
+	</ul>
+</div>	
+
+<!--Content Wrap -->
+<div id="content-wrap">
+		
+<div id="main">
+${content}
+</div>
+
+<!--End content-wrap-->
+</div>
+
+<!-- Footer -->
+<div id="footer">
+<table class='copyright'><tr><td >　　　　　江西省防汛抗旱总指挥部办公室　0791-8825111</td></tr>
+<tr><td>江西省防汛信息中心　0791-88825832　技术支持：中兴长天信息技术（南昌）有限公司</td></tr>
+<tr><td>　　　　　江  　西  　省   　水　 文　 局　 0791-6415261</td></tr>
+</table>
+</div>
+<!-- END Footer -->
+
+<!-- END Wrap -->
+</div>
+</body>
+</html>
