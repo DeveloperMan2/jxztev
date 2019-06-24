@@ -150,6 +150,14 @@
             <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/ojdbc14.jar</systemPath>
         </dependency>
 
+        <dependency>
+            <groupId>zetv-commmons</groupId>
+            <artifactId>zetv-commmons</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/webapp/WEB-INF/lib/zetv-commmons.jar</systemPath>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
         <dependency>
             <groupId>org.mybatis</groupId>

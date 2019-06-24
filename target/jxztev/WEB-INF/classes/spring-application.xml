@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	   http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	   http://www.springframework.org/schema/tx
@@ -29,7 +29,19 @@
         </property>
     </bean>
 
-	    <bean id="acDataSource" class="com.alibaba.druid.pool.DruidDataSource"
+    <!-- 使用注解注入properties中的值,可以注入多个-->
+    <bean id="systemConfig"
+          class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
+            <list>
+                <value>classpath:systemconfig.properties</value>
+            </list>
+        </property>
+        <!-- 设置编码格式 -->
+        <property name="fileEncoding" value="UTF-8"></property>
+    </bean>
+
+    <bean id="acDataSource" class="com.alibaba.druid.pool.DruidDataSource"
           init-method="init" destroy-method="close">
         <property name="driverClassName" value="${jdbc.driverClasss}"/>
         <property name="url" value="${jdbc.jdbcUrl}"/>
@@ -61,10 +73,10 @@
         <property name="defaultAutoCommit" value="true"/>
 
         <!-- 验证连接有效与否的SQL，不同的数据配置不同 -->
-		            <property name="validationQuery">
-                <value>select * from dual</value>
-            </property>
-		
+        <property name="validationQuery">
+            <value>select * from dual</value>
+        </property>
+
         <!--
 	  打开PSCache，并且指定每个连接上PSCache的大小
 	  如果用Oracle，则把poolPreparedStatements配置为true，mysql可以配置为false

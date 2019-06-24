@@ -4,137 +4,137 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "RiverMapResponse", description = "RiverMap接口响应类")
-public class RiverMapResponse{
-	@ApiModelProperty(value = "stcd,这是一个别名变量。")
-	private String stcd;
+public class RiverMapResponse {
+    @ApiModelProperty(value = "stcd,这是一个别名变量。")
+    private String stcd;
 
-	public String getStcd() {
-		return stcd;
-	}
+    public String getStcd() {
+        return stcd;
+    }
 
-	public void setStcd(String stcd) {
-		this.stcd = stcd;
-	}
-	
-	@ApiModelProperty(value = "stnm,这是一个别名变量。")
-	private String stnm;
+    public void setStcd(String stcd) {
+        this.stcd = stcd;
+    }
 
-	public String getStnm() {
-		return stnm;
-	}
+    @ApiModelProperty(value = "stnm,这是一个别名变量。")
+    private String stnm;
 
-	public void setStnm(String stnm) {
-		this.stnm = stnm;
-	}
-	
-	@ApiModelProperty(value = "bsnm,这是一个别名变量。")
-	private String bsnm;
+    public String getStnm() {
+        return stnm;
+    }
 
-	public String getBsnm() {
-		return bsnm;
-	}
+    public void setStnm(String stnm) {
+        this.stnm = stnm;
+    }
 
-	public void setBsnm(String bsnm) {
-		this.bsnm = bsnm;
-	}
-	
-	@ApiModelProperty(value = "county,这是一个别名变量。")
-	private String county;
+    @ApiModelProperty(value = "bsnm,这是一个别名变量。")
+    private String bsnm;
 
-	public String getCounty() {
-		return county;
-	}
+    public String getBsnm() {
+        return bsnm;
+    }
 
-	public void setCounty(String county) {
-		this.county = county;
-	}
-	
-	@ApiModelProperty(value = "tm,这是一个别名变量。")
-	private String tm;
+    public void setBsnm(String bsnm) {
+        this.bsnm = bsnm;
+    }
 
-	public String getTm() {
-		return tm;
-	}
+    @ApiModelProperty(value = "county,这是一个别名变量。")
+    private String county;
 
-	public void setTm(String tm) {
-		this.tm = tm;
-	}
-	
-	@ApiModelProperty(value = "z,这是一个别名变量。")
-	private String z;
+    public String getCounty() {
+        return county;
+    }
 
-	public String getZ() {
-		return z;
-	}
+    public void setCounty(String county) {
+        this.county = county;
+    }
 
-	public void setZ(String z) {
-		this.z = z;
-	}
-	
-	@ApiModelProperty(value = "cwrz,这是一个别名变量。")
-	private String cwrz;
+    @ApiModelProperty(value = "tm,这是一个别名变量。")
+    private String tm;
 
-	public String getCwrz() {
-		return cwrz;
-	}
+    public String getTm() {
+        return tm;
+    }
 
-	public void setCwrz(String cwrz) {
-		this.cwrz = cwrz;
-	}
-	
-	@ApiModelProperty(value = "q,这是一个别名变量。")
-	private String q;
+    public void setTm(String tm) {
+        this.tm = tm;
+    }
 
-	public String getQ() {
-		return q;
-	}
+    @ApiModelProperty(value = "z,这是一个别名变量。")
+    private String z;
 
-	public void setQ(String q) {
-		this.q = q;
-	}
-	
-	@ApiModelProperty(value = "wptn,这是一个别名变量。")
-	private String wptn;
+    public String getZ() {
+        return z;
+    }
 
-	public String getWptn() {
-		return wptn;
-	}
+    public void setZ(String z) {
+        this.z = z;
+    }
 
-	public void setWptn(String wptn) {
-		this.wptn = wptn;
-	}
-	
-	@ApiModelProperty(value = "wrz,这是一个别名变量。")
-	private String wrz;
+    @ApiModelProperty(value = "cwrz,这是一个别名变量。")
+    private String cwrz;
 
-	public String getWrz() {
-		return wrz;
-	}
+    public String getCwrz() {
+        return cwrz;
+    }
 
-	public void setWrz(String wrz) {
-		this.wrz = wrz;
-	}
-	
-	@ApiModelProperty(value = "obhtz,这是一个别名变量。")
-	private String obhtz;
+    public void setCwrz(String cwrz) {
+        this.cwrz = cwrz;
+    }
 
-	public String getObhtz() {
-		return obhtz;
-	}
+    @ApiModelProperty(value = "q,这是一个别名变量。")
+    private String q;
 
-	public void setObhtz(String obhtz) {
-		this.obhtz = obhtz;
-	}
-	
-	@ApiModelProperty(value = "obhtztm,这是一个别名变量。")
-	private String obhtztm;
+    public String getQ() {
+        return q;
+    }
 
-	public String getObhtztm() {
-		return obhtztm;
-	}
+    public void setQ(String q) {
+        this.q = q;
+    }
 
-	public void setObhtztm(String obhtztm) {
-		this.obhtztm = obhtztm;
-	}
-	
+    @ApiModelProperty(value = "wptn,这是一个别名变量。")
+    private String wptn;
+
+    public String getWptn() {
+        return wptn;
+    }
+
+    public void setWptn(String wptn) {
+        this.wptn = wptn;
+    }
+
+    @ApiModelProperty(value = "wrz,这是一个别名变量。")
+    private String wrz;
+
+    public String getWrz() {
+        return wrz;
+    }
+
+    public void setWrz(String wrz) {
+        this.wrz = wrz;
+    }
+
+    @ApiModelProperty(value = "obhtz,这是一个别名变量。")
+    private String obhtz;
+
+    public String getObhtz() {
+        return obhtz;
+    }
+
+    public void setObhtz(String obhtz) {
+        this.obhtz = obhtz;
+    }
+
+    @ApiModelProperty(value = "obhtztm,这是一个别名变量。")
+    private String obhtztm;
+
+    public String getObhtztm() {
+        return obhtztm;
+    }
+
+    public void setObhtztm(String obhtztm) {
+        this.obhtztm = obhtztm;
+    }
+
 }
