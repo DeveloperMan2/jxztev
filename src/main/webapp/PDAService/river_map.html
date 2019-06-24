@@ -72,7 +72,7 @@
     <script src="scripts/jquery.min.js"></script>
     <script src="scripts/template-native.js"></script>
     <script type="text/javascript">
-        let dataResult = null;
+        let dataResult = null, cachedList = null;
 
         function ajaxHandler() {
             $.ajax({
@@ -322,7 +322,7 @@
     </map>
 </center>
 
-<!--<div class="space"></div>-->
+<div class="space"></div>
 
 <div id="mesgMenu" style="position:absolute;display:none;z-index:100;width:520;background-Color:menu; border: 0"
      onMouseOut="makeMenuHidden()" onMouseOver="makeMenuHidden()">
