@@ -153,11 +153,9 @@
 
 </map>
 </center>
-
-<%
-
-for(int i = 0; i < list.size(); i++){
-	countyRainValue = list.get(i);
+<script id="map-point-template" type="text/template">
+<% for(var i = 0; i < countRainList.size(); i++){
+    var countyRainValue = countRainList.get(i);
 	boolean isAlarm = false;
 	if(countyRainValue.getMaxRain() != null && countyRainValue.getMaxRain() > 0){
     	
@@ -165,31 +163,36 @@ for(int i = 0; i < list.size(); i++){
     	if(countyRainValue.getMaxRain()>50 ){
     		isAlarm = true;
     	}
-
-
-%> 
+%>
 		<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S<%=countyRainValue.getAddvcd()%>')" id=W<%=countyRainValue.getAddvcd()%>
 		 style="Z-INDEX: 1;WIDTH: 8; POSITION: absolute; HEIGHT: 8;Cursor: hand; Display: none">
 		<table cellSpacing=0 cellPadding=0 border=0>
 		<tr align="left" width="40">
-			<td width="32"><img id=i<%=countyRainValue.getAddvcd()%> border="0" src="styles/default/images/map/<%if(isAlarm){out.print("alarm.gif");}else{out.print("normal.gif");}%>"></td></tr>
+			<td width="32">
+		<%if(isAlarm){%>
+	       <img id=i<%=countyRainValue.getAddvcd()%> border="0" src="styles/default/images/map/alarm.gif")>
+        <%}else {%>
+	      <img id=i<%=countyRainValue.getAddvcd()%> border="0" src="styles/default/images/map/normal.gif")>
+        <%}%>
+	</td></tr>
 		<tr align="left">
 			<td >
 			<table cellSpacing=0 cellPadding=0 border=0 >
 				<tr align="center">
-					<td <%if(isAlarm){out.print("class='bodyred'");}else{out.print("class='bodymin'");}%>>
-					<%=Math.round(countyRainValue.getMaxRain())%>
-					</td>
-				</tr>
-			</table>
-			</td>
+		<%if(isAlarm){%>
+	      td class='bodyred'>
+	    <%}else{%>
+	      <td class='bodymin'>
+	    <%}%>
+		   <%=Math.round(countyRainValue.getMaxRain())%>
+		  </td>
+	  </tr>
+	</table>
+	</td>
 		</tr>
 		</table>
 		</DIV>
-<%
-    }
-}
-%>
+<% }}%>
 
 <div id="mesgMenu" style="position:absolute;display:none;width:140;background-Color:menu; border:0;" onMouseOut="makeMenuHidden()" onMouseOver="makeMenuHidden()">
 <table cellSpacing=1 cellPadding=0 bgColor=#FDB771 border=0>
@@ -205,7 +208,6 @@ for(int i = 0; i < list.size(); i++){
   <table bgcolor="#FFFFFF" height=50>
     <tr><td class="construction">
     　　当鼠标移雨量数字时，系统将自动显示该县名称及最大降雨量。
-    
     </td></tr>
  </table>
  </fieldset>
@@ -233,30 +235,27 @@ for(int i = 0; i < list.size(); i++){
 	
 	<div style="folat:left;clear:right;width:180px;height:140px;overflow:auto;">
 		<table width=100% border=0 cellspacing=0 class=list>
-<%
-	List<CountyRainValue> aMaxRain = rainMapSvr.getMaxRainOrderRain(queryHour, 20);
-
-	for(int i = 0 ; i < aMaxRain.size(); i ++ ){
-		countyRainValue = aMaxRain.get(i);
-		if(countyRainValue.getMaxRain() != null && countyRainValue.getMaxRain() > 0){
-%>
+	<script id="rain-table-template" type="text/template">
+	<%for(var i = 0 ; i < maxRainList.size(); i ++ ){
+		var countyRainValue = maxRainList.get(i);
+		if(countyRainValue.maxRain() != null && countyRainValue.maxRain() > 0){
+    %>
 		<tr>
 			<td color=#ffffff width=40% height=24><font style="font-size: 12px; font-family: Arial;color:#222222;">
-			<%=countyRainValue.getStnm().trim()%></font></td>
+			<%=countyRainValue.stnm().trim()%></font></td>
 			<td color=#ffffff align=center width=38%><font style="font-size: 12px; font-family: Arial;font-weight:bold;" >
-			<%=countyRainValue.getCnnm().trim()%></font></td>
+			<%=countyRainValue.cnnm().trim()%></font></td>
 			<td color=#ffffff align=center>
-			<%
-				if(countyRainValue.getMaxRain() >= 50){
-					out.print("<font style='font-size: 12px; font-family: Arial;' color=red>" + Math.round(countyRainValue.getMaxRain()));
+			<%if(countyRainValue.maxRain() >= 50){%>
+					<font style='font-size: 12px; font-family: Arial;' color=red>" Math.round(countyRainValue.getMaxRain()))></font></td>;
 				}else{
-					out.print("<font style='font-size: 12px; font-family: Arial;' color=blue>" + Math.round(countyRainValue.getMaxRain()));
+					<font style='font-size: 12px; font-family: Arial;' color=blue>" + Math.round(countyRainValue.getMaxRain()))</font></td>;
 				}
-			%></font></td>
+			%>
 		</tr>
 <%
 		}
-		
+
 	}
 %>
 		</table>			
@@ -283,16 +282,16 @@ for(int i = 0; i < list.size(); i++){
 		<label for="rdo_1" style="cursor:hand">
 		<input type="radio" name="hour" value="6" id="rdo_1"
 		 <%if(queryHour.equals("6")){out.print("checked onclick='onclicks()'><font color='red'>6</font>");}else{out.print(" onclick='onclicks()'>6");}%></label>
-		&nbsp;<label for="rdo_2" style="cursor:hand"><input type="radio" name="hour" value="12" id="rdo_2" 
+		&nbsp;<label for="rdo_2" style="cursor:hand"><input type="radio" name="hour" value="12" id="rdo_2"
 		<%if(queryHour.equals("12")){out.print("checked onclick='onclicks()'><font color='red'>12</font>");}else{out.print(" onclick='onclicks()'>12");}%></label>
 		&nbsp;&nbsp;&nbsp;
 		</td>
 	</tr>
 	<tr class='bodymin'>
 		<td align="center">最近
-		<label for="rdo_3" style="cursor:hand"><input type="radio" name="hour" value="24" id="rdo_3" 
+		<label for="rdo_3" style="cursor:hand"><input type="radio" name="hour" value="24" id="rdo_3"
 		<%if(queryHour.equals("24")){out.print("checked onclick='onclicks()'><font color='red'>24</font>");}else{out.print(" onclick='onclicks()'>24");}%></label>
-		<label for="rdo_4" style="cursor:hand"><input type="radio" name="hour" value="48" id="rdo_4" 
+		<label for="rdo_4" style="cursor:hand"><input type="radio" name="hour" value="48" id="rdo_4"
 		<%if(queryHour.equals("48")){out.print("checked onclick='onclicks()'><font color='red'>48</font>");}else{out.print(" onclick='onclicks()'>48");}%></label>
 		小时降雨
 		</td>

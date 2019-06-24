@@ -35,29 +35,10 @@ public class ReservoirMapController {
     @RequestMapping(value = "/reservoirMapHandler")
     @ResponseBody
     @ApiOperation(value = "select ReservoirMapResponse 对象", httpMethod = "GET", notes = "select ReservoirMapResponse对象", response = ReservoirMapResponse.class, responseContainer = "List", tags = "水库地图")
-    public JSONObject reservoirMapHandler(
-            @ApiParam(value = "(?)md,月日，如0608。", name = "md")
-            @RequestParam(required = false, name = "md") String md,
-            @ApiParam(value = "( >= ?)bgTm,起始时间。", name = "bgTm")
-            @RequestParam(required = false, name = "bgTm") String bgTm,
-            @ApiParam(value = "( < ?)endTm,截至时间。", name = "endTm")
-            @RequestParam(required = false, name = "endTm") String endTm,
-            @ApiParam(value = "( in (?))stations,测站编码列表，以逗号分隔,参数格式为:value1,value2,value3。", name = "stations")
-            @RequestParam(required = false, name = "stations") String stations) {
-        ReservoirMapRequest reservoirMapRequestParams = new ReservoirMapRequest();
-        reservoirMapRequestParams.setMd(md);
-        reservoirMapRequestParams.setBgTm(bgTm);
-        reservoirMapRequestParams.setEndTm(endTm);
-        //in/not in子句參數，需要先转化为List，前台输入参数格式为"value1,value2,value3"
-        List<String> stationsList = new ArrayList<String>();
-        if (null != stations && !stations.equals("")) {
-            for (String v : stations.split(",")) {
-                stationsList.add(v);
-            }
-            reservoirMapRequestParams.setStationsList(stationsList);
-        }
-
-        return reservoirMapService.reservoirMapHandler(reservoirMapRequestParams);
+    public JSONObject reservoirMapHandler() {
+        JSONObject jo = new JSONObject();
+        reservoirMapService.queryReservoirMapList();
+        return jo;
     }
 }
 

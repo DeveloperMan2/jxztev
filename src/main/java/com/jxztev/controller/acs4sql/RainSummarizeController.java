@@ -34,7 +34,27 @@ public class RainSummarizeController {
     @ResponseBody
     @ApiOperation(value = "select RainSummarizeResponse 对象", httpMethod = "GET", notes = "select RainSummarizeResponse对象", response = RainSummarizeResponse.class, responseContainer = "List", tags = "水雨情概述")
     public JSONObject rainSummarizeHandler() {
-        return rainSummarizeService.rainSummarizeHandler();
+        JSONObject jo = new JSONObject();
+        try {
+            //获取雨情概述
+            String rain = rainSummarizeService.getRainSummary("24");
+            //获取水库水情
+            String reservoir = rainSummarizeService.getReservoirSummary();
+            //获取河道水情
+            String river = rainSummarizeService.getRiverSummary();
+            JSONObject data = new JSONObject();
+            data.put("rain", rain);
+            data.put("reservoir",reservoir);
+            data.put("river",river);
+            jo.put("data", data);
+            jo.put("status", 1);// 1-成功， 0-失败
+            jo.put("msg", "执行成功");
+        } catch (Exception e) {
+            jo.put("data", null);
+            jo.put("status", 0);// 1-成功， 0-失败
+            jo.put("msg", e.getMessage());// msg-失败信息
+        }
+        return jo;
     }
 }
 
