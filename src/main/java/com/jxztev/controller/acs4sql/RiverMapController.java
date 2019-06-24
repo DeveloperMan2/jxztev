@@ -43,11 +43,7 @@ public class RiverMapController {
     @RequestMapping(value = "/riverMapHandler")
     @ResponseBody
     @ApiOperation(value = "select RiverMapResponse 对象", httpMethod = "GET", notes = "select RiverMapResponse对象", response = RiverMapResponse.class, responseContainer = "List", tags = "河道地图")
-    public JSONObject riverMapHandler(
-            /*@ApiParam(value = "( >= ?)bgTm,起始时间。", name = "bgTm")
-            @RequestParam(required = false, name = "bgTm") String bgTm, @ApiParam(value = "( < ?)endTm,截至时间。", name = "endTm")
-            @RequestParam(required = false, name = "endTm") String endTm, @ApiParam(value = "( in (?))stations,测站编码列表，以逗号分隔,参数格式为:value1,value2,value3。", name = "stations")
-            @RequestParam(required = false, name = "stations") String stations*/) {
+    public JSONObject riverMapHandler() {
         //获取请求参数
         Date bgTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", -1, 0), "yyyy-MM-dd HH:mm:ss");
         Date endTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", 0, 1), "yyyy-MM-dd HH:mm:ss");
