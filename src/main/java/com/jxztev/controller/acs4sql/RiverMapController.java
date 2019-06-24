@@ -46,7 +46,7 @@ public class RiverMapController {
     public JSONObject riverMapHandler() {
         //获取请求参数
         JSONObject jo = new JSONObject();
-         riverMapService.queryRiverMapList();
+        riverMapService.queryRiverMapList();
         return jo;
     }
 }
