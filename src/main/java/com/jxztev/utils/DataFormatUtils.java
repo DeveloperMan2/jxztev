@@ -228,7 +228,7 @@ public class DataFormatUtils {
 
         }
 
-        DecimalFormat df = new DecimalFormat("E00");
+        DecimalFormat df = new DecimalFormat(bf.toString());
 
         String temp = df.format(input);
 

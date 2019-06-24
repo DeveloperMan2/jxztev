@@ -11,13 +11,15 @@
                 jdbcType="VARCHAR"/>
         <result property="stnm" column="stnm" javaType="String"
                 jdbcType="VARCHAR"/>
-        <result property="maxrain" column="maxrain" javaType="String"
-                jdbcType="VARCHAR"/>
+        <result property="maxrain" column="maxrain" javaType="Float"
+                jdbcType="REAL"/>
     </resultMap>
 
-    <select id="rainSummarizeHandler" parameterType="com.jxztev.entity.acs4sql.RainSummarizeRequest"
+    <select id="findStationRainList" parameterType="com.jxztev.entity.acs4sql.RainSummarizeRequest"
             resultMap="RainSummarizeResultMap">
     <![CDATA[
+
+
 
                 select *
                   from (select A.stcd as stcd,
@@ -33,13 +35,37 @@
                                    and ADDVCD <= 369900) A
                           left join ST_PPTN_R B
                             on A.stcd = B.stcd
-                         where tm > to_date(#{tm}, 'yyyy-mm-dd hh:mi:ss')
+                         where tm > to_date(#{tm}, 'yyyy-mm-dd hh24:mi:ss')
                            and tm <= (sysdate + 1 / 24)
                          group by A.stcd
                          order by maxrain desc)
                  where maxrain > #{maxrain}
                    and rownum < 100
 
+
+
+        ]]>
+</select>
+
+    <select id="findCountyRainList" parameterType="com.jxztev.entity.acs4sql.RainSummarizeRequest"
+            resultMap="RainSummarizeResultMap">
+    <![CDATA[
+            select distinct (addvcd),(select ADDVNM from ST_ADDVCD_D where ADDVCD = D.ADDVCD) as cnnm,
+               sum(C.drp) / count(C.stcd) avgRain, max(C.drp) as maxRain
+              from (select A.stcd, sum(nvl(drp, 0)) drp
+                      from (select *
+                              from ST_STBPRP_B
+                             where ADDVCD > 360000
+                               and ADDVCD <= 369900) A
+                      left join ST_PPTN_R B
+                        on A.stcd = B.stcd
+                       and tm > to_date(#{tm}, 'yyyy-mm-dd hh24:mi:ss')
+                       and tm <=(sysdate + 1/24)
+                     group by A.stcd) C
+              left join ST_STBPRP_B D
+                on C.stcd = D.stcd
+             group by addvcd
+             order by maxRain desc
         ]]>
 </select>
 </mapper>

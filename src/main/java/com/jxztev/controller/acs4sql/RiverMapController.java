@@ -1,6 +1,12 @@
 package com.jxztev.controller.acs4sql;
 
+import com.alibaba.fastjson.JSONObject;
+import com.jxztev.entity.acs4sql.RiverMapRequest;
+import com.jxztev.entity.acs4sql.RiverMapResponse;
+import com.jxztev.service.acs4sql.IRiverMapService;
 import com.ztev.commons.date.DateUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,18 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
-
-import com.alibaba.fastjson.JSONObject;
-
-import com.jxztev.service.acs4sql.IRiverMapService;
-import com.jxztev.entity.acs4sql.RiverMapResponse;
-import org.springframework.web.bind.annotation.RequestParam;
-import io.swagger.annotations.ApiParam;
-import com.jxztev.entity.acs4sql.RiverMapRequest;
-
+import java.text.SimpleDateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
