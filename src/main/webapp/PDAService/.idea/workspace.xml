@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b04f87e-6784-4bae-882a-fbd35a4a1595" name="Default Changelist" comment="" />
+    <list default="true" id="7b04f87e-6784-4bae-882a-fbd35a4a1595" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/../../../../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../resources/mapping/acs4sql/RiverMapMapping.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../../resources/mapping/acs4sql/RiverMapMapping.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -16,14 +20,14 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/river_map.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1045">
-              <caret line="170" lean-forward="true" selection-start-line="170" selection-end-line="170" />
+            <state relative-caret-position="456">
+              <caret line="159" column="33" selection-start-line="159" selection-start-column="33" selection-end-line="159" selection-end-column="33" />
               <folding>
                 <element signature="n#style#0;n#head#0;n#html#0;n#!!top" />
-                <element signature="n#script#1;n#head#0;n#html#0;n#!!top" />
                 <element signature="n#style#0;n#DIV#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#DIV#1;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#DIV#0;n#DIV#1;n#!!top" expanded="true" />
+                <element signature="n#script#3;n#head#0;n#html#0;n#!!top" />
                 <element signature="n#style#0;n#DIV#0;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#DIV#1;n#body#0;n#html#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#DIV#4;n#body#0;n#html#0;n#!!top" expanded="true" />
@@ -38,6 +42,9 @@
       </file>
     </leaf>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -50,11 +57,13 @@
     <option name="width" value="980" />
     <option name="height" value="1050" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -71,7 +80,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -109,17 +117,18 @@
       <updated>1561294492209</updated>
       <workItem from="1561294495215" duration="4295000" />
       <workItem from="1561338531916" duration="666000" />
+      <workItem from="1561343157980" duration="612000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="4961000" />
+    <option name="totallyTimeSpent" value="5573000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="848" extended-state="6" />
+    <frame x="-7" y="-7" width="1550" height="848" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19852448" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20120725" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -145,14 +154,14 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/river_map.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1045">
-          <caret line="170" lean-forward="true" selection-start-line="170" selection-end-line="170" />
+        <state relative-caret-position="456">
+          <caret line="159" column="33" selection-start-line="159" selection-start-column="33" selection-end-line="159" selection-end-column="33" />
           <folding>
             <element signature="n#style#0;n#head#0;n#html#0;n#!!top" />
-            <element signature="n#script#1;n#head#0;n#html#0;n#!!top" />
             <element signature="n#style#0;n#DIV#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#DIV#1;n#!!top" expanded="true" />
             <element signature="n#style#0;n#DIV#0;n#DIV#1;n#!!top" expanded="true" />
+            <element signature="n#script#3;n#head#0;n#html#0;n#!!top" />
             <element signature="n#style#0;n#DIV#0;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#DIV#1;n#body#0;n#html#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#DIV#4;n#body#0;n#html#0;n#!!top" expanded="true" />
