@@ -1,0 +1,220 @@
+/** 相关列表样式定义 **/
+
+.TitleBold {
+	font-size: 16px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #0000ff;
+}
+
+/*********** 链接列表样式定义 ************/
+div.linkList {
+	border:1 solid #6699CC;
+	background-color:#E2ECF5;
+}
+div.linkList dl,dt,dd{margin:0;padding:0;}
+div.linkList dt {
+	border-bottom:1 solid #69C;
+	background-color:#A6C4E1;
+	padding:5px 5px;
+	line-height:11pt;
+}
+div.linkList dd {
+	background-image:url(images/ico.gif);
+	background-repeat:no-repeat;
+	padding:2px 2px;
+	padding-left:12px;
+	line-height:11pt;
+}
+div.linkList a {
+	color:#333366;
+	text-decoration:none;
+}
+div.linkList a:hover {
+	color:red;
+	text-decoration:underline;
+}
+/*********** end 链接列表样式定义 ************/
+
+
+/* ---------- 定义显示数据的表格样式 ------------ */
+
+TABLE.list {
+	color:black;
+	/*background-color:#CFCFCF;表现为内部线条颜色*/
+	border:1 solid #003F8E;
+	cursor:default;
+	list:expression(this.cellSpacing=1,this.cellPadding=0);
+}
+TABLE.list CAPTION { 
+	font-size:11pt;color:#366798;height:25px;
+	padding-left:10px;
+	font-weight:normal;
+	text-align:left;
+	/*background-image:url(images/desktop.gif);
+	background-repeat:no-repeat;*/
+}
+TABLE.list TH {
+	height:20px;
+	color:white;
+	font-size:10pt;
+	font-weight:normal;
+
+	line-height:15px;
+	background-image:url(images/thBg.gif);
+}
+TABLE.list TH.left {
+	text-align:left;
+	line-height:15px;
+}
+TABLE.list TH.title {
+	text-align:center;
+	color:white;
+	height:25px;
+	font-weight:bold;
+	background-color:#63BBD2;
+	background-image:url(images/thBg.gif);
+}
+
+TABLE.list TH.foot 
+{
+	color:#444444;
+	text-align:right;
+	font-weight:normal;
+	background-color:#E3E9F2;
+	background-image:url(.);
+}
+
+TABLE.list TR {
+	background-color:white;
+	background-color:expression('#B8E6F3,#FFFFFF'.split(',')[rowIndex%2]);
+}
+
+TABLE.list TR TD A { color:#293661;text-decoration:none; }
+TABLE.list TR TD A:visited { color:#444;text-decoration:none; }
+TABLE.list TR TD A:hover { color:#990000; }
+TABLE.list TD {
+	color:#222;
+	padding-left:5px;padding-right:2px;
+}
+
+/*************************** 显示数据表格样式定义 ******************************************/
+TABLE.main
+{
+	border:1 solid black;
+	font-size:9pt;
+	background-color:#CCC;	/* 表现为表格线条的颜色 */
+	/*width:100%;*/
+}
+
+/* 表头 */
+TABLE.main TH
+{
+	background-color:#006699;
+	font-size:9pt;
+	font-weight:normal;
+	color:white;
+	height:22px;
+	position: relative;  
+	/*top:expression(this.offsetParent.scrollTop);*/
+}
+
+TABLE.main TR{
+	background-color:white;
+	height:22px;
+}
+
+/*相邻行颜色区分之一*/
+TABLE.main TR.true{
+	background-color:white;
+	height:22px;
+}
+/*相邻行颜色区分之二*/
+TABLE.main TR.false{
+	background-color:#EFEFEF;
+	height:22px;
+}
+
+/* 被选中行的样式定义 */
+TABLE.main TR.selected {
+	background-color:#D8F0FC;
+	height:22px;
+	/*cursor:hand;*/
+}
+
+/* 未被选中行的样式定义，和默认一样 */
+TABLE.main TR.unselected {
+	background-color:white;
+	height:22px;
+	cursor:default;
+}
+
+/*鼠标移入行样式*/
+TABLE.main TR.overrow {
+	background-color: #DDDDDD;
+}
+
+/*鼠标移出行样式*/
+TABLE.main TR.outrow {
+	background-color: WHITE;
+}
+
+/* 着重标记行的样式 */
+TABLE.main TR.emp {
+	background-color:#AA0000;
+	color:white;
+	font-weight:bold;
+	height:22px;
+}
+/* 着重标记行的样式 */
+TABLE.main TD.emp {
+	background-color:#AA0000;
+	color:white;
+	font-weight:bold;
+	height:22px;
+}
+/* 统计行的样式 */
+TABLE.main TR.count {
+	background-color:#DEDEDE;
+	height:22px;
+}
+
+/*一个象素高的水平线*/
+TABLE.main TR.hor_line{
+	background-color:#888888;
+	height:1px;
+}
+
+/**表格底部行样式*/
+TABLE.main TR.foot {
+	background-color:#DDD;
+	color:#444;
+}
+TABLE.main TR.foot TH {
+	background-color:#DDD;
+	color:#444;
+}
+
+
+TABLE.main TD {
+	padding:2px 2px;
+}
+
+TABLE.main TD.invalidDate {
+	background-color:#CCCCCC;
+}
+
+/* 需要加粗左边框的单元格 */
+TABLE.main TD.borderleft_bold {
+	padding-left:1px;
+	padding-right:1px;
+	border-left:2 solid black;
+}
+
+TABLE.main TH.borderleft_bold {
+	padding-left: 1px;
+	padding-right: 1px;
+	border-left: 2 solid black;
+}
+/*************************** 结束数据表格样式定义 ******************************************/
+/* ---------- end 定义显示数据的表格样式 ------------ */

@@ -1,0 +1,1104 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>最新河道水情示意图</title>
+    <link href="styles/default/list.css" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            background-color: #FFFFFF;
+            margin-top: 0px;
+            margin-left: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px
+        }
+
+        TD {
+            font-size: 14px;
+        }
+
+        TR.headtd {
+            font-size: 14px;
+            color: #ffffff;
+        }
+
+        TR.bodytd {
+            font-size: 14px;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        TD.warn {
+            font-family: "Fixedsys";
+            font-size: 14px;
+            color: #ff0000;
+        }
+
+        div.warn {
+            font-family: "Fixedsys";
+            font-size: 14px;
+            color: #ff0000;
+        }
+
+        TD.bodyblack {
+            font-size: 14px;
+            color: #000000;
+            font-weight: bold;
+        }
+
+        TD.bodyhui {
+            font-size: 14px;
+            color: #333333;
+            font-weight: bold;
+        }
+
+        TD.normal {
+            font-family: "Fixedsys";
+            font-size: 14px;
+            color: #222222;
+        }
+
+        div.normal {
+            font-family: "Fixedsys";
+            font-size: 14px;
+            color: #222222;
+        }
+
+        .suoming {
+            line-height: 24px;
+            font-size: 14px;
+            color: #000000;
+        }
+    </style>
+    <script language="javascript" src="scripts/riverwayPos.js"></script>
+    <script language="javascript">
+        var oSource;
+        var tempsrc = "";//保存样式
+        var tempstcd = "";//保存站号
+
+        function isIE() { //ie?
+            if (window.navigator.userAgent.toLowerCase().indexOf("msie") >= 1)
+                return true;
+            else
+                return false;
+        }
+
+        if (!isIE()) { //firefox innerText define
+            HTMLElement.prototype.__defineGetter__("innerText",
+                function () {
+                    return this.textContent.replace(/(^\s*)|(\s*$)/g, "");
+                }
+            );
+            HTMLElement.prototype.__defineSetter__("innerText",
+                function (sText) {
+                    this.textContent = sText;
+                }
+            );
+        }
+
+        function listObj(sStcdt, sStnm, sYmdhm, sZ, sQ, sW, sH, sS) {
+            this.Stcdt = "S" + sStcdt;//站号
+            this.Stnm = sStnm;//站名
+            this.Ymdhm = sYmdhm;//时间
+            this.Z = sZ;//当前水位
+            this.Q = sQ;//流量
+            this.W = sW;//警戒水位
+            this.H = sH;//历史最高水位
+            this.S = sS;//水势
+        }
+
+        //-----------------------------------------------------------
+        //在记录集中查找记录,找到返回值>=0, 否则为-1
+        //-----------------------------------------------------------
+        function find(findStr) {
+            var str = findStr;
+
+            var found = false;
+            for (var i = 0; i < cachedList.length; i++) {
+                if (cachedList[i].Stcdt == str) {
+                    found = true;
+                    break;
+                }
+
+            }
+
+            if (found) {
+                return i;
+            } else {
+                return -1;
+            }
+        }
+
+        function dispRsvrInfo() {
+
+            oSource = window.event.srcElement;
+            //window.alert (oSource.coords);
+            //如果当前窗口的激活元素为area
+            if (oSource.tagName == "AREA") {
+                var sId;
+                sId = oSource.id;
+
+                //找到该站点的信息，改变菜单的内容
+                changeMenuContent(sId);
+
+            }
+
+            //window.event.returnValue = false;
+
+        }
+
+        //找到该站点的信息，改变菜单的内容
+        function changeMenuContent(sId) {
+            //根据area的ID找到该站点的信息
+            var iRet;  //查询站点结果
+            iRet = -1;
+
+            iRet = find(sId);
+            //window.alert(iRet);
+
+            if (iRet >= 0) {
+                tmpstr = sId.replace("S", "i");
+                tempstcd = tmpstr;
+                tempsrc = document.getElementById(tmpstr).src;
+                document.getElementById(tmpstr).src = 'styles/default/images/map/green.gif'
+                //改变菜单的内容
+                document.getElementById("stnm").innerText = cachedList[iRet].Stnm;
+                document.getElementById("ymdhm").innerText = cachedList[iRet].Ymdhm;
+                document.getElementById("z").innerText = cachedList[iRet].Z;
+                document.getElementById("q").innerText = cachedList[iRet].Q;
+                document.getElementById("w").innerText = cachedList[iRet].W;
+                document.getElementById("h").innerText = cachedList[iRet].H;
+                document.getElementById("s").innerText = cachedList[iRet].S;
+                //以菜单形式显示该站的信息
+                displayMenu();
+            } else {
+                window.alert("没有找到该站点的信息!");
+            }
+        }
+
+        //显示菜单
+        function displayMenu() {
+            iY = window.event.y;
+            if (window.event.y + document.body.scrollTop + 52 + 40 > document.body.offsetHeight - 200) {
+                iY = iY + document.body.scrollTop - 100;
+            } else {
+                iY = iY + 40;
+            }
+            //window.status = ' Y=' + iY + ' body height:' + document.body.offsetHeight + ' body width:' + document.body.offsetWidth + ' window.event.x:='+window.event.x+ ' window.event.y:='+window.event.y + ' document.body.scrollTop='+document.body.scrollTop;
+            iX = document.body.offsetWidth / 2 - 260;
+            mesgMenu.style.left = iX;
+            mesgMenu.style.top = iY;
+            mesgMenu.style.zIndex = "100";
+            mesgMenu.style.display = "";
+        }
+
+        function makeMenuHidden() {
+            document.getElementById(tempstcd).src = tempsrc;
+            mesgMenu.style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+<center>
+    <img border="0" id="mainMap" src="styles/default/images/map/riverMap.gif" useMap="#SystemMap">
+    <map name="SystemMap">
+    </map>
+</center>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302700')"
+     id=W62302700 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62302700 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            109.51
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62513200')"
+     id=W62513200 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62513200 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            18.94
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62411400')"
+     id=W62411400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62411400 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            64.94
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62601200')"
+     id=W62601200 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62601200 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            17.73
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62502600')"
+     id=W62502600 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62502600 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            17.91
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62601600')"
+     id=W62601600 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62601600 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            17.44
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S60113400')"
+     id=W60113400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i60113400 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            17.85
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302300')"
+     id=W62302300 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62302300 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            20.63
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302250')"
+     id=W62302250 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62302250 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            20.94
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 左上显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62304150')"
+     id=W62304150 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <DIV style="position:absolute;text-align:right;" class="normal">
+        108.99
+    </DIV>
+    <TABLE cellSpacing=0 cellPadding=0 border=0 width='40' height='28'>
+        <tr align="right" valign="bottom">
+            <td><img width="10" id=i62304150 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62301500')"
+     id=W62301500 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62301500 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            47.05
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302750')"
+     id=W62302750 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62302750 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            94.86
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62304700')"
+     id=W62304700 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62304700 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            142.59
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62301900')"
+     id=W62301900 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62301900 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            32.91
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62401800')"
+     id=W62401800 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62401800 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            36.61
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62501800')"
+     id=W62501800 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62501800 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            23.61
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62406600')"
+     id=W62406600 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62406600 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            33.72
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302100')"
+     id=W62302100 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62302100 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            24.08
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62402400')"
+     id=W62402400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62402400 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            24.55
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62412000')"
+     id=W62412000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62412000 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            38.05
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302000')"
+     id=W62302000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62302000 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            26.89
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62505000')"
+     id=W62505000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62505000 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            19.59
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62413000')"
+     id=W62413000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62413000 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            19.41
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62517400')"
+     id=W62517400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62517400 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            20.20
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<!-- 右下显示 -->
+<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62312250')"
+     id=W62312250 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
+    <TABLE cellSpacing=0 cellPadding=0 border=0>
+        <tr align="left">
+            <td><img width="10" id=i62312250 border="0" src="styles/default/images/map/normal.gif"></td>
+        </tr>
+        <tr align="left">
+            <td>
+                <TABLE cellSpacing=0 cellPadding=0 border=0>
+                    <tr align="center">
+                        <td class="normal">
+                            23.79
+                        </td>
+                    </tr>
+                </TABLE>
+            </td>
+        </tr>
+    </TABLE>
+</DIV>
+
+
+<div class="space"></div>
+
+<div id="mesgMenu" style="position:absolute;display:none;z-index:100;width:520;background-Color:menu; border: 0"
+     onMouseOut="makeMenuHidden()" onMouseOver="makeMenuHidden()">
+
+    <TABLE cellSpacing=0 cellPadding=0 bgColor=#ffffcc border=0>
+        <TBODY>
+        <TR bgColor=#003333>
+            <TD width=75 height=28 align=center id="td_stnm">
+                <span align=center><FONT color=#ffffff>站名</FONT></span>
+            </TD>
+            <TD width=140 align=center id="td_ymdhm">
+                <span><FONT color=#ffffff>时间</FONT></span>
+            </TD>
+            <TD width=60 align=center id="td_z">
+                <span><FONT color=#ffffff>水位</FONT></span>
+            </TD>
+            <TD width=75 align=center id="td_w">
+                <span><FONT color=#ffffff>警戒水位</FONT></span>
+            </TD>
+            <TD width=75 align=center id="td_h">
+                <span><FONT color=#ffffff>历史最高</FONT></span>
+            </TD>
+            <TD width=60 align=center id="td_q">
+                <span><FONT color=#ffffff>流量</FONT></span>
+            </TD>
+            <TD width=40 align=center id="td_s">
+                <span><FONT color=#ffffff>水势</FONT></span>
+            </TD>
+
+        </TR>
+        <TR>
+            <TD height=24 id="stnm" align=center class="bodyblack">
+            </TD>
+            <TD bgColor=#ffffe8 height=24 id="ymdhm" align=center class="bodyhui">
+            </TD>
+            <TD bgColor=#ffffe8 height=24 id="z" align=center class="bodyblack">
+            </TD>
+            <TD bgColor=#ffffe8 height=24 id="w" align=center class="bodyblack">
+            </TD>
+            <TD bgColor=#ffffe8 height=24 id="h" align=center class="bodyblack">
+            </TD>
+            <TD bgColor=#ffffe8 height=24 id="q" align=center class="bodyblack">
+            </TD>
+            <TD bgColor=#ffffe8 height=24 id="s" align=center class="bodyblack">
+            </TD>
+        </TR>
+        </TBODY>
+    </TABLE>
+</div>
+
+<div id="construction" style="position:absolute;display:none;left:129px;top:475px;width:175;border:1 ">
+    <table>
+        <tr>
+            <td class="suoming"><span style="color: #30899F; font-weight:bold;">操作提示：</span><br>
+                　　鼠标移至水位站点或水位数据时，系统自动显示该站水位、警戒水位、流量、水势等信息。
+
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="hdgs" style="position:absolute;display:none;z-index:10;left:540;top:275;width:240;border:1;font-size:16px ">
+    <!--河道水情概述-->
+    <fieldset style='padding:10 10;'>
+        <legend>　　全省江河水情概述</legend>
+        　6月17日各江河重点站均在警戒水位以下，其中离警戒水位最近的是于都县 峡山水库站<br>
+
+    </fieldset>
+</div>
+
+<div id="tuli" style="position:absolute;display:none;left:540;top:480;width:240;border:1 ">
+    <img src="styles/default/images/map/rivertuli.gif">
+    <table>
+        <td align="center" valign="middle">&nbsp;
+        </td>
+    </table>
+</div>
+
+<div class="space"></div>
+</body>
+<script language="javascript">
+
+    cachedList = new Array();
+
+
+    cachedList[0] = new listObj('62302700', '峡山水库', '6月17日 9点30分', '109.51', '', '', '', '—');
+
+    cachedList[1] = new listObj('62513200', '永修', '6月17日 9点0分', '18.94', '', '20.00', '23.48', '');
+
+    cachedList[2] = new listObj('62411400', '上饶', '6月17日 9点0分', '64.94', '', '66.00', '69.39', '');
+
+    cachedList[3] = new listObj('62601200', '星子', '6月17日 9点0分', '17.73', '', '19.00', '22.52', '');
+
+    cachedList[4] = new listObj('62502600', '鄱阳', '6月17日 9点0分', '17.91', '', '19.50', '22.61', '');
+
+    cachedList[5] = new listObj('62601600', '湖口', '6月17日 9点0分', '17.44', '18000', '19.50', '22.59', '↓');
+
+    cachedList[6] = new listObj('60113400', '九江', '6月17日 9点0分', '17.85', '33000', '20.00', '23.03', '—');
+
+    cachedList[7] = new listObj('62302300', '南昌', '6月17日 9点0分', '20.63', '', '23.00', '24.80', '↓');
+
+    cachedList[8] = new listObj('62302250', '外洲', '6月17日 9点0分', '20.94', '11500', '23.50', '25.60', '↓');
+
+    cachedList[9] = new listObj('62304150', '翰林桥', '6月17日 9点30分', '108.99', '203', '112.00', '115.06', '—');
+
+    cachedList[10] = new listObj('62301500', '吉安', '6月17日 9点0分', '47.05', '4400', '50.50', '54.05', '');
+
+    cachedList[11] = new listObj('62302750', '赣州', '6月17日 9点30分', '94.86', '1550', '99.00', '103.29', '—');
+
+    cachedList[12] = new listObj('62304700', '信丰', '6月17日 9点30分', '142.59', '337', '147.00', '147.92', '—');
+
+    cachedList[13] = new listObj('62301900', '新干', '6月17日 9点0分', '32.91', '', '37.50', '39.81', '');
+
+    cachedList[14] = new listObj('62401800', '廖家湾', '6月17日 9点10分', '36.61', '772', '41.30', '42.78', '');
+
+    cachedList[15] = new listObj('62501800', '渡峰坑', '6月17日 9点0分', '23.61', '59', '28.50', '34.27', '');
+
+    cachedList[16] = new listObj('62406600', '娄家村', '6月17日 9点0分', '33.72', '220', '38.80', '41.51', '');
+
+    cachedList[17] = new listObj('62302100', '丰城', '6月17日 9点0分', '24.08', '', '29.60', '31.56', '');
+
+    cachedList[18] = new listObj('62402400', '李家渡', '6月17日 9点0分', '24.55', '1030', '30.50', '33.08', '↓');
+
+    cachedList[19] = new listObj('62412000', '弋阳', '6月17日 9点0分', '38.05', '462', '44.00', '47.93', '');
+
+    cachedList[20] = new listObj('62302000', '樟树', '6月17日 9点0分', '26.89', '7480', '33.00', '34.72', '');
+
+    cachedList[21] = new listObj('62505000', '虎山', '6月17日 9点0分', '19.59', '108', '26.00', '31.18', '');
+
+    cachedList[22] = new listObj('62413000', '梅港', '6月17日 9点0分', '19.41', '1220', '26.00', '29.84', '');
+
+    cachedList[23] = new listObj('62517400', '万家埠', '6月17日 9点0分', '20.20', '130', '27.00', '29.68', '—');
+
+    cachedList[24] = new listObj('62312250', '高安', '6月17日 9点0分', '23.79', '217', '31.00', '33.80', '');
+
+    function changePos() {
+        construction.style.left = document.body.offsetWidth / 2 - 360;
+        construction.style.display = "";
+        tuli.style.left = document.body.offsetWidth / 2 + 58;
+        tuli.style.display = "";
+        hdgs.style.pixelLeft = document.body.offsetWidth / 2 + 60;
+        hdgs.style.display = "";
+
+
+        try {
+            W62302700.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302700'].split(",")[0]);
+            W62302700.style.top = parseFloat(mlist['62302700'].split(",")[1]) - 5;
+            W62302700.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62513200.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62513200'].split(",")[0]);
+            W62513200.style.top = parseFloat(mlist['62513200'].split(",")[1]) - 5;
+            W62513200.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62411400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62411400'].split(",")[0]);
+            W62411400.style.top = parseFloat(mlist['62411400'].split(",")[1]) - 5;
+            W62411400.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62601200.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62601200'].split(",")[0]);
+            W62601200.style.top = parseFloat(mlist['62601200'].split(",")[1]) - 5;
+            W62601200.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62502600.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62502600'].split(",")[0]);
+            W62502600.style.top = parseFloat(mlist['62502600'].split(",")[1]) - 5;
+            W62502600.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62601600.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62601600'].split(",")[0]);
+            W62601600.style.top = parseFloat(mlist['62601600'].split(",")[1]) - 5;
+            W62601600.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W60113400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['60113400'].split(",")[0]);
+            W60113400.style.top = parseFloat(mlist['60113400'].split(",")[1]) - 5;
+            W60113400.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62302300.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302300'].split(",")[0]);
+            W62302300.style.top = parseFloat(mlist['62302300'].split(",")[1]) - 5;
+            W62302300.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62302250.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302250'].split(",")[0]);
+            W62302250.style.top = parseFloat(mlist['62302250'].split(",")[1]) - 5;
+            W62302250.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62304150.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62304150'].split(",")[0]);
+            W62304150.style.top = parseFloat(mlist['62304150'].split(",")[1]) - 5;
+            W62304150.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62301500.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62301500'].split(",")[0]);
+            W62301500.style.top = parseFloat(mlist['62301500'].split(",")[1]) - 5;
+            W62301500.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62302750.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302750'].split(",")[0]);
+            W62302750.style.top = parseFloat(mlist['62302750'].split(",")[1]) - 5;
+            W62302750.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62304700.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62304700'].split(",")[0]);
+            W62304700.style.top = parseFloat(mlist['62304700'].split(",")[1]) - 5;
+            W62304700.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62301900.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62301900'].split(",")[0]);
+            W62301900.style.top = parseFloat(mlist['62301900'].split(",")[1]) - 5;
+            W62301900.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62401800.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62401800'].split(",")[0]);
+            W62401800.style.top = parseFloat(mlist['62401800'].split(",")[1]) - 5;
+            W62401800.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62501800.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62501800'].split(",")[0]);
+            W62501800.style.top = parseFloat(mlist['62501800'].split(",")[1]) - 5;
+            W62501800.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62406600.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62406600'].split(",")[0]);
+            W62406600.style.top = parseFloat(mlist['62406600'].split(",")[1]) - 5;
+            W62406600.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62302100.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302100'].split(",")[0]);
+            W62302100.style.top = parseFloat(mlist['62302100'].split(",")[1]) - 5;
+            W62302100.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62402400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62402400'].split(",")[0]);
+            W62402400.style.top = parseFloat(mlist['62402400'].split(",")[1]) - 5;
+            W62402400.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62412000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62412000'].split(",")[0]);
+            W62412000.style.top = parseFloat(mlist['62412000'].split(",")[1]) - 5;
+            W62412000.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62302000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302000'].split(",")[0]);
+            W62302000.style.top = parseFloat(mlist['62302000'].split(",")[1]) - 5;
+            W62302000.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62505000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62505000'].split(",")[0]);
+            W62505000.style.top = parseFloat(mlist['62505000'].split(",")[1]) - 5;
+            W62505000.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62413000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62413000'].split(",")[0]);
+            W62413000.style.top = parseFloat(mlist['62413000'].split(",")[1]) - 5;
+            W62413000.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62517400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62517400'].split(",")[0]);
+            W62517400.style.top = parseFloat(mlist['62517400'].split(",")[1]) - 5;
+            W62517400.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+        try {
+            W62312250.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62312250'].split(",")[0]);
+            W62312250.style.top = parseFloat(mlist['62312250'].split(",")[1]) - 5;
+            W62312250.style.display = '';
+        } catch (e) {
+            //alert(""+e.message);
+        }
+
+    }
+
+    changePos();
+
+    var interval;
+
+    interval = setInterval('changePos()', 100);
+
+</script>
+</html>

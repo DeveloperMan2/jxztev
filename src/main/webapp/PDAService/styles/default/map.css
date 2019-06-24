@@ -1,0 +1,12 @@
+/********************** 用户地图显示的***********************/
+.headtd{font-size: 14px; color: #ffffff;}
+.bodytd{font-family: "Fixedsys";font-size: 16px; color: #000000;}
+.bodyred{font-family: "Fixedsys"; font-size: 16px; color: #ff0000;}
+.bodyblack{font-family: "Fixedsys"; font-size: 16px; color: #000000;}
+.bodyhui{font-family: "Fixedsys"; font-size: 16px; color: #333333;}
+.bodymin{font-family: "Fixedsys";font-size: 14px; color: #222222;}
+.construction{line-height:24px; font-size: 14px; color: #000000;}
+
+.listhead{font-size: 12px; font-family: Arial; font-weight:bold;}
+.listmain{font-size: 12px; font-family: Arial;color:#222222;}
+.listnormal{font-size: 12px; font-family: Arial;}
