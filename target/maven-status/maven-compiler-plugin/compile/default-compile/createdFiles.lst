@@ -2,7 +2,6 @@ com\jxztev\dao\acs4sql\IRainSummarizeDao.class
 com\jxztev\service\impl\acs4sql\FindSlideRainService.class
 com\jxztev\service\acs4sql\IRiverMapService.class
 com\jxztev\entity\acs4sql\RainSummarizeRequest.class
-com\jxztev\service\impl\acs4sql\RainSummarizeService.class
 com\jxztev\entity\acs4sql\FindSlideRainRequest.class
 com\jxztev\entity\acs4sql\IsReservoirOverTopFLZRequest.class
 com\jxztev\entity\acs4sql\RiverMapResponse.class
