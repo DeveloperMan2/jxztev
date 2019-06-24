@@ -37,8 +37,8 @@ public class RiverMapController {
     private String reservoirStations;
 
     @Autowired
-    @Qualifier("riverMapService")
-    private IRiverMapService riverMapService;
+    @Qualifier("riverMapExService")
+    private IRiverMapService riverMapExService;
 
     @RequestMapping(value = "/riverMapHandler")
     @ResponseBody
@@ -70,7 +70,7 @@ public class RiverMapController {
             riverMapRequestParams.setStationsList(stationsList);
         }
 
-        return riverMapService.riverMapHandler(riverMapRequestParams);
+        return riverMapExService.riverMapHandler(riverMapRequestParams);
     }
 }
 
