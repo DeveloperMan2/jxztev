@@ -101,7 +101,7 @@ TABLE.list TD {
 /*************************** 显示数据表格样式定义 ******************************************/
 TABLE.main
 {
-	border:1 solid black;
+	border: 1px solid #ccc;;
 	font-size:9pt;
 	background-color:#CCC;	/* 表现为表格线条的颜色 */
 	/*width:100%;*/

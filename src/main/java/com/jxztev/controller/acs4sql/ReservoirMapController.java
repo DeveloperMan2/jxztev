@@ -38,6 +38,8 @@ public class ReservoirMapController {
     public JSONObject reservoirMapHandler() {
         JSONObject jo = new JSONObject();
         reservoirMapService.queryReservoirMapList();
+        //组装水库地图数据模型
+
         return jo;
     }
 }

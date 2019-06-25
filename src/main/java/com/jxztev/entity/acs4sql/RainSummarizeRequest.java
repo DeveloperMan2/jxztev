@@ -17,7 +17,7 @@ public class RainSummarizeRequest {
         this.tm = tm;
     }
 
-    @ApiModelProperty(value = "maxrain,这是一个别名变量。")
+    @ApiModelProperty(value = "maxrain,这是一个别名变量。", example = "1")
     private Float maxrain;
 
     public Float getMaxrain() {
