@@ -303,10 +303,10 @@
             }
             //window.status = ' Y=' + iY + ' body height:' + document.body.offsetHeight + ' body width:' + document.body.offsetWidth + ' window.event.x:='+window.event.x+ ' window.event.y:='+window.event.y + ' document.body.scrollTop='+document.body.scrollTop;
             iX = document.body.offsetWidth / 2 - 260;
-            mesgMenu.style.left = iX;
-            mesgMenu.style.top = iY;
-            mesgMenu.style.zIndex = "100";
-            mesgMenu.style.display = "";
+            document.getElementById('mesgMenu').style.left = iX;
+            document.getElementById('mesgMenu').style.top = iY;
+            document.getElementById('mesgMenu').style.zIndex = "100";
+            document.getElementById('mesgMenu').style.display = "";
         }
 
         function makeMenuHidden() {

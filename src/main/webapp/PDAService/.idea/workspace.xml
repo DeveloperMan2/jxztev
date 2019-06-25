@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7b04f87e-6784-4bae-882a-fbd35a4a1595" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/river_map.html" beforeDir="false" afterPath="$PROJECT_DIR$/river_map.html" afterDir="false" />
-    </list>
+    <list default="true" id="7b04f87e-6784-4bae-882a-fbd35a4a1595" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -18,8 +16,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/river_map.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="171">
-              <caret line="74" column="48" selection-start-line="74" selection-start-column="48" selection-end-line="74" selection-end-column="48" />
+            <state relative-caret-position="285">
+              <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
               <folding>
                 <element signature="n#style#0;n#head#0;n#html#0;n#!!top" />
                 <element signature="n#style#0;n#DIV#0;n#!!top" expanded="true" />
@@ -144,8 +142,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="952" />
-    <option name="width" value="977" />
+    <option name="x" value="951" />
+    <option name="width" value="978" />
     <option name="height" value="1050" />
   </component>
   <component name="ProjectView">
@@ -223,12 +221,12 @@
       <workItem from="1561294495215" duration="4295000" />
       <workItem from="1561338531916" duration="666000" />
       <workItem from="1561359263089" duration="10161000" />
-      <workItem from="1561383640936" duration="7846000" />
+      <workItem from="1561383640936" duration="8132000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="22968000" />
+    <option name="totallyTimeSpent" value="23254000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1550" height="848" extended-state="6" />
@@ -349,8 +347,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/river_map.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="171">
-          <caret line="74" column="48" selection-start-line="74" selection-start-column="48" selection-end-line="74" selection-end-column="48" />
+        <state relative-caret-position="285">
+          <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
           <folding>
             <element signature="n#style#0;n#head#0;n#html#0;n#!!top" />
             <element signature="n#style#0;n#DIV#0;n#!!top" expanded="true" />
