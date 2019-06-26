@@ -1,0 +1,308 @@
+﻿<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>最新雨情示意图</title>
+    <link href="styles/default/map.css" rel="stylesheet" type="text/css">
+    <link href="styles/default/list.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="scripts/template-native.js"></script>
+    <script type="text/javascript" src="scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="scripts/rainPos.js"></script>
+    <script type="text/javascript">
+        var countRainList;
+        var maxRainList;
+        var cachedList;
+        $(function () {
+            ajaxHandler();
+        })
+        setInterval(ajaxHandler, 300000);
+
+        function ajaxHandler() {
+            $('#tm').css('display', 'none');
+            $('#warnDiv').css('display', 'none');
+            $('#rainTable').css('display', 'none');
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/rain/rainquery",
+                data: {hour: $("input:radio:checked").val()},
+                success: function (response) {
+                    if (response['status'] === 1) {
+                        $('#tm').css('display', '');
+                        $('#warnDiv').css('display', '');
+                        $('#rainTable').css('display', 'table');
+
+                        var data = response['data'];
+                        $('#tm').text(data['queryTm'])
+                        countRainList = data['countRainList'];
+                        maxRainList = data['maxRainList'];
+                        var html = template('map-point-template', {
+                            list: countRainList
+                        });
+                        $('#warnDiv').html(html);
+
+                        html = template('rain-table-template', {
+                            maxRainList: maxRainList
+                        });
+                        $('#rainTable').html(html);
+
+                        cachedList = new Array();
+                        for (var i = 0; i < countRainList.length; i++) {
+                            if (countRainList[i].maxrain > 0) {
+                                cachedList[i] = new listObj(countRainList[i].addvcd, countRainList[i].cnnm, Math.round(countRainList[i].maxrain));
+                            }
+                        }
+                        changePos();
+                    }
+                },
+                error: function () {
+                }
+
+            });
+        }
+
+        function listObj(sStcdt, sStnm, sDyrn) {
+            this.Stcdt = "S" + sStcdt;
+            this.Stnm = sStnm;
+            this.Dyrn = sDyrn;
+        }
+
+        //-----------------------------------------------------------
+        //在记录集中查找记录,找到返回值>=0, 否则为-1
+        //-----------------------------------------------------------
+        function find(findStr) {
+            var str = findStr;
+
+            var found = false;
+            for (var i = 0; i < cachedList.length; i++) {
+                if (cachedList[i].Stcdt == str) {
+                    found = true;
+                    break;
+                }
+
+            }
+
+            if (found) {
+                return i;
+            }
+            else {
+                return -1;
+            }
+        }
+
+        //找到该站点的信息，改变菜单的内容
+        function changeMenuContent(sId) {
+            //根据area的ID找到该站点的信息
+            var iRet = find(sId);
+            if (iRet >= 0) {
+                var tmpstr = sId.replace("S", "i");
+                tempstcd = tmpstr;
+                tempsrc = document.getElementById(tmpstr).src;
+                document.getElementById(tmpstr).src = 'styles/default/images/map/green.gif'
+                //改变菜单的内容
+                window.stnm.innerText = cachedList[iRet].Stnm + ' ' + cachedList[iRet].Dyrn + ' 毫米';
+
+                //显示菜单
+                var iY = window.event.y;
+                if (window.event.y + 90 > document.body.offsetHeight - 20)
+                    iY = iY - 60;
+                else
+                    iY = iY + 20;
+                var iX = window.event.x - 90;
+                $('#mesgMenu').css('left', iX);
+                $('#mesgMenu').css('top', iY);
+                $('#mesgMenu').css('zIndex', '10');
+                $('#mesgMenu').css('display', '');
+                $('#mesgMenu').focus();
+            }
+            else {
+                window.alert("没有找到该站点的信息!");
+            }
+        }
+
+        function makeMenuHidden() {
+            $('#'+tempstcd).attr('src', tempsrc);
+            $('#mesgMenu').blur();
+            $('#mesgMenu').css('display', 'none');
+        }
+
+        function changePos() {
+            $('#mapTitle').css('left', document.body.offsetWidth / 2 - 250);
+            $('#queryToolbar').css('left', document.body.offsetWidth / 2 + 120);
+            $('#queryToolbar').css('display', '');
+            $('#tuli').css('left', document.body.offsetWidth / 2 + 150);
+            $('#tuli').css('display', '');
+            $('#timeDiv').css('left', document.body.offsetWidth / 2 + 150);
+            if (maxRainList.length > 0) {
+                countyRainValue = maxRainList[0];//无雨则不显示雨量表
+                if (countyRainValue.maxrain > 0) {
+                    $('#timeDiv').css('display', '');
+                }
+            }
+            for (var i = 0; i < countRainList.length; i++) {
+                countyRainValue = countRainList[i];
+                if (countyRainValue.maxrain > 0) {
+                    try {
+                        $('#W' + countyRainValue.addvcd).css('left', (document.body.offsetWidth - 396) / 2 - 50 + parseFloat(mlist[countyRainValue.addvcd].split(",")[0]));
+                        $('#W' + countyRainValue.addvcd).css('top', parseFloat(mlist[countyRainValue.addvcd].split(",")[1]) - 4);
+                        $('#W' + countyRainValue.addvcd).css('display', '');
+                    } catch (e) {
+                    }
+                }
+            }
+            $('#construction').css('left', document.body.offsetWidth / 2 - 360);
+            $('#construction').css('display', '');
+        }
+    </script>
+</head>
+<body style="MARGIN-TOP: 0px;MARGIN-LEFT: 0px;MARGIN-RIGHT: 0px; MARGIN-BOTTOM: 0px">
+<center>
+    <img border="0" height="580" id="mainMap" src="styles/default/images/map/rainMap.gif"
+         useMap="dispRainMap.asp#SystemMap">
+    <map NAME="SystemMap">
+    </map>
+</center>
+<div id="warnDiv" style="position: absolute;width: 100%;height: 100%;top:0;">
+    <script id="map-point-template" type="text/template">
+        <%for(var i = 0; i < list.length; i++){
+        var countyRainValue = list[i];
+        var isAlarm = false;
+        if(countyRainValue.maxrain > 0){%>
+
+        <div onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S<%=countyRainValue.addvcd%>')"
+             id=W<%=countyRainValue.addvcd%>
+            style="Z-INDEX: 1;WIDTH: 8px; POSITION: absolute; HEIGHT: 8px;Cursor: hand; Display: none">
+
+            <table cellSpacing=0 cellPadding=0 border=0>
+                <tr align="left" width="40px">
+                    <td width="32">
+                        <img id='i<%=countyRainValue.addvcd%>' border="0"
+                             src="styles/default/images/map/<%=countyRainValue.maxrain>50 ? 'alarm.gif':'normal.gif' %>">
+                    </td>
+                </tr>
+                <tr align="left">
+                    <td>
+                        <table cellSpacing=0 cellPadding=0 border=0>
+                            <tr align="center">
+                                <td class="<%=countyRainValue.maxrain>50 ? 'bodyred' : 'bodymin'%>">
+                                    <%=countyRainValue.maxrain%>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <% }}%>
+    </script>
+</div>
+<div id="mesgMenu" style="position:absolute;display:none;width:140px;background-Color:menu; border:0;"
+     onMouseOut="makeMenuHidden()" onMouseOver="makeMenuHidden()">
+    <table cellSpacing=1 cellPadding=0 bgColor=#FDB771 border=0>
+        <tr class="bodytd" bgcolor="#FFFFFF">
+            <td width=140 height=24 id="stnm" align=center>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="construction" style="position:absolute;left:283px;top:490px;width:200px;height:50px;border:0; font-size:16px ">
+    <fieldset style='padding:0 10px;'>
+        <legend>操作提示：</legend>
+        <table bgcolor="#FFFFFF" height=50>
+            <tr>
+                <td class="construction">
+                    　　当鼠标移雨量数字时，系统将自动显示该县名称及最大降雨量。
+                </td>
+            </tr>
+        </table>
+    </fieldset>
+</div>
+
+<div id="mapTitle" style="position:absolute;display:none;left:28px;top:2px;width:390px;border:0;">
+    <table>
+        <tr>
+            <td width="380">
+                <span style="font-size:24px;font-family: 黑体;">全省实时降雨量监测</span></td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="timeDiv"
+     style="position:absolute;display:none; LEFT: 600px; width:200px; TOP: 280px ;border:0; font-size:16px">
+    <!--最大雨量列表-->
+    <fieldset style='padding:0 10px;'>
+        <legend>雨量前20位站点(毫米)</legend>
+        <table width=180 border=0 class=list>
+            <tr height=24 valign=middle>
+                <td width=35% align=center class="listhead">站名</td>
+                <td width=35% align=center class="listhead">所在县</td>
+                <td width=30% align=center class="listhead">雨量</td>
+            </tr>
+        </table>
+
+        <div style="folat:left;clear:right;width:180px;height:140px;overflow:auto;">
+            <table id="rainTable" width=100% border=0 cellspacing=0 class=list>
+                <script id="rain-table-template" type="text/template">
+                    <%for(var i = 0 ; i < maxRainList.length; i ++ ){
+                    var countyRainValue = maxRainList[i];
+                    if(countyRainValue.maxrain > 0){
+                    %>
+                    <tr>
+                        <td color=#ffffff width=40% height=24><font
+                                style="font-size: 12px; font-family: Arial;color:#222222;">
+                            <%=countyRainValue.stnm%></font></td>
+                        <td color=#ffffff align=center width=38><font
+                                style="font-size: 12px; font-family: Arial;font-weight:bold;">
+                            <%=countyRainValue.cnnm%></font></td>
+                        <td color=#ffffff align=center>
+                            <font style='font-size: 12px; font-family: Arial;'
+                                  color="<%=countyRainValue.maxrain >= 50 ? 'red' : 'blue'%>"><%=countyRainValue.maxrain%></font>
+                        </td>
+                    </tr>
+                    <%}}%>
+                </script>
+            </table>
+        </div>
+    </fieldset>
+</div>
+<div id="tuli" style="position:absolute;display:none;left:580px;top:470px;width:200px;border:0 ">
+    <table>
+        <td valign="middle">
+            <img src="styles/default/images/map/raintuli.gif">
+        </td>
+    </table>
+</div>
+<div id="queryToolbar" style="position:absolute;display:none;left:28px;top:206px;width:240px;border:0;">
+    <table cellpadding="0" cellspacing="0" width="100%" align="center" border="0">
+        <form name="form1" action="rainMap.jsp" method="post">
+            <tr>
+                <td align="center">
+                    <table width="265">
+                        <tr class='bodymin'>
+                            <td align="center">
+                                <label for="rdo_1" style="cursor:hand"><input type="radio" name="hour" value="6"
+                                                                              id="rdo_1"
+                                                                              onclick='ajaxHandler()'>6</label>
+                                <label for="rdo_2" style="cursor:hand"><input type="radio" name="hour" value="12"
+                                                                              id="rdo_2"
+                                                                              onclick='ajaxHandler()'>12</label>
+                            </td>
+                        </tr>
+                        <tr class='bodymin'>
+                            <td align="center">最近
+                                <label for="rdo_3" style="cursor:hand"><input type="radio" name="hour" value="24"
+                                                                              id="rdo_3" checked
+                                                                              onclick='ajaxHandler()'><font color='red'>24</font></label>
+                                <label for="rdo_4" style="cursor:hand"><input type="radio" name="hour" value="48"
+                                                                              id="rdo_4"
+                                                                              onclick='ajaxHandler()'>48</label>
+                                小时降雨
+                            </td>
+                        </tr>
+                    </table>
+        </form>
+    </table>
+    <span id="tm" style="font-size:16px; left: 20px;position: relative"></span>
+</div>
+</body>
+</html>

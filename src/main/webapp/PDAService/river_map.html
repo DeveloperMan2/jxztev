@@ -70,32 +70,9 @@
         }
     </style>
     <script src="scripts/jquery.min.js"></script>
+    <script src="scripts/template-native.js"></script>
     <script type="text/javascript">
-        //ajax请求
-        var templateJson = {
-            "msg": "执行成功",
-            "data": {
-                "upCodes": "62304150",
-                "overTopWrzSize": 0,
-                "overTopWrz": [],
-                "summarize": "6月23日各江河重点站均在警戒水位以下，其中离警戒水位最近的是信丰县 信丰站",
-                "rows": [{
-                    "obhtz": "147.92",
-                    "q": null,
-                    "cwrz": null,
-                    "stcd": "62304700",
-                    "wptn": null,
-                    "stnm": "信丰",
-                    "county": "信丰县",
-                    "tm": null,
-                    "obhtztm": "2016-03-21 12:00:00",
-                    "z": null,
-                    "bsnm": "长江",
-                    "wrz": "147"
-                }]
-            },
-            "status": 1
-        };
+        let dataResult = null, cachedList = null;
 
         function ajaxHandler() {
             $.ajax({
@@ -104,9 +81,10 @@
                 success: function (response) {
                     if (response['status'] === 1) {
                         var data = response['data'];
+                        dataResult = data;
                         //解析数据结构并生成相应的页面元素
-
-
+                        parseHtmlModel(data);
+                        changePos();
                     }
                 },
                 error: function () {
@@ -119,42 +97,95 @@
             //绘制监测点
             var rows = data['rows'], upCodes = data['upCodes'];
             if (upCodes && rows && rows.length > 0) {
+                cachedList = new Array();
+
                 for (var i = 0; i < rows.length; i++) {
                     var row = rows[i];
-                    var htmlElement = ' <!-- 右下显示 -->\n' +
-                        '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
-                        '            id=W' + row['stcd'] + ' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
-                        '                <TABLE cellSpacing=0 cellPadding=0 border=0>\n' +
-                        '                <tr align="left">\n' +
-                        '                <td><img width="10" id=i' + row['stcd'] + ' border="0" src="styles/default/images/map/${row.img}"></td>\n' +
-                        '                </tr>\n' +
-                        '                <tr align="left">\n' +
-                        '                <td >\n' +
-                        '                <TABLE cellSpacing=0 cellPadding=0 border=0 >\n' +
-                        '                <tr align="center">\n' +
-                        '                <td class="${row.style}">\n' +
-                        '                ${row.Z}\n' +
-                        '                </td>\n' +
-                        '                </tr>\n' +
-                        '                </TABLE>\n' +
-                        '                </td></tr>\n' +
-                        '            </TABLE>\n' +
-                        '            </DIV>' +
-                        '               <!-- 左上显示 -->\n' +
-                        '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S${row.STCD}\')"\n' +
-                        '            id=W${row.STCD} style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
-                        '                <DIV style="position:absolute;text-align:right;" class="${row.style}">\n' +
-                        '                <fmt:formatNumber value="${row.Z}" minFractionDigits="2" maxFractionDigits="2"/>\n' +
-                        '                </DIV>\n' +
-                        '                <TABLE cellSpacing=0 cellPadding=0 border=0 width=\'40\' height=\'28\'>\n' +
-                        '                <tr align="right" valign="bottom">\n' +
-                        '                <td><img width="10" id=i${row.STCD} border="0" src="styles/default/images/map/${row.img}"></td>\n' +
-                        '                </tr>\n' +
-                        '                </TABLE>\n' +
-                        '                </DIV>';
+                    cachedList[i] = new listObj(row['stcd'], row['stnm'], row['tm'], row['z'], row['q'], row['wrz'], row['obhtz'], row['wptn']);
+
+                    var htmlElement = '';
+                    if (upCodes.indexOf(row['stcd']) === -1) {
+                        htmlElement = ' <!-- 右下显示 -->\n' +
+                            '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
+                            '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
+                            '                <TABLE cellSpacing=0 cellPadding=0 border=0>\n' +
+                            '                <tr align="left">\n' +
+                            '                <td><img width="10" id=\'i' + row['stcd'] + '\' border="0" src="styles/default/images/map/' + row['img'] + '"></td>\n' +
+                            '                </tr>\n' +
+                            '                <tr align="left">\n' +
+                            '                <td >\n' +
+                            '                <TABLE cellSpacing=0 cellPadding=0 border=0 >\n' +
+                            '                <tr align="center">\n' +
+                            '                <td class="' + row['style'] + '">\n' +
+                            '                ' + row['z'] + '\n' +
+                            '                </td>\n' +
+                            '                </tr>\n' +
+                            '                </TABLE>\n' +
+                            '                </td></tr>\n' +
+                            '            </TABLE>\n' +
+                            '            </DIV>';
+                    } else if (upCodes.indexOf(row['stcd']) !== -1) {
+                        htmlElement = '               <!-- 左上显示 -->\n' +
+                            '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
+                            '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
+                            '                <DIV style="position:absolute;text-align:right;" class="' + row['style'] + '">\n' +
+                            '                <fmt:formatNumber value="' + row['z'] + '" minFractionDigits="2" maxFractionDigits="2"/>\n' +
+                            '                </DIV>\n' +
+                            '                <TABLE cellSpacing=0 cellPadding=0 border=0 width=\'40\' height=\'28\'>\n' +
+                            '                <tr align="right" valign="bottom">\n' +
+                            '                <td><img width="10" id=\'i' + row['stcd'] + '\' border="0" src="styles/default/images/map/' + row['img'] + '"></td>\n' +
+                            '                </tr>\n' +
+                            '                </TABLE>\n' +
+                            '                </DIV>';
+                    }
+
+
+                    $('body').append(htmlElement);
+                }
+            }
+
+            <!--河道水情概述-->
+            var summarize = data['summarize'], overTopWrzSize = data['overTopWrzSize'], overTopWrz = data['overTopWrz'];
+            var hdgsContentTemplate = template('hdgs-content-template', {
+                summarize: summarize,
+                overTopWrzSize: overTopWrzSize,
+                overTopWrz: overTopWrz
+            });
+            document.getElementById("hdgs").innerHTML = hdgsContentTemplate;
+        }
+
+        function changePos() {
+            if (document.readyState === 'complete' && document.getElementById('construction')) {
+                document.getElementById('construction').style.left = document.body.offsetWidth / 2 - 360;
+                document.getElementById('construction').style.display = "";
+                document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 58;
+                document.getElementById('tuli').style.display = "";
+                document.getElementById('hdgs').style.pixelLeft = document.body.offsetWidth / 2 + 60;
+                document.getElementById('hdgs').style.display = "";
+
+                if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
+                    for (let i = 0; i < dataResult['rows'].length; i++) {
+                        var row = dataResult['rows'][i];
+                        try {
+                            var stcdDom = document.getElementById('W' + row['stcd']);
+                            if (stcdDom) {
+                                stcdDom.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist[row['stcd']].split(",")[0]);
+                                stcdDom.style.top = parseFloat(mlist[row['stcd']].split(",")[1]) - 5;
+                                stcdDom.style.display = '';
+                            }
+                        } catch (e) {
+                            //alert(""+e.message);
+                        }
+                    }
                 }
             }
         }
+
+        changePos();
+
+        var interval;
+
+        interval = setInterval('changePos()', 100);
     </script>
     <script language="javascript" src="scripts/riverwayPos.js"></script>
     <script language="javascript">
@@ -246,7 +277,7 @@
                 tmpstr = sId.replace("S", "i");
                 tempstcd = tmpstr;
                 tempsrc = document.getElementById(tmpstr).src;
-                document.getElementById(tmpstr).src = 'styles/default/images/map/green.gif'
+                document.getElementById(tmpstr).src = 'styles/default/images/map/green.gif';
                 //改变菜单的内容
                 document.getElementById("stnm").innerText = cachedList[iRet].Stnm;
                 document.getElementById("ymdhm").innerText = cachedList[iRet].Ymdhm;
@@ -272,15 +303,15 @@
             }
             //window.status = ' Y=' + iY + ' body height:' + document.body.offsetHeight + ' body width:' + document.body.offsetWidth + ' window.event.x:='+window.event.x+ ' window.event.y:='+window.event.y + ' document.body.scrollTop='+document.body.scrollTop;
             iX = document.body.offsetWidth / 2 - 260;
-            mesgMenu.style.left = iX;
-            mesgMenu.style.top = iY;
-            mesgMenu.style.zIndex = "100";
-            mesgMenu.style.display = "";
+            document.getElementById('mesgMenu').style.left = iX;
+            document.getElementById('mesgMenu').style.top = iY;
+            document.getElementById('mesgMenu').style.zIndex = "100";
+            document.getElementById('mesgMenu').style.display = "";
         }
 
         function makeMenuHidden() {
             document.getElementById(tempstcd).src = tempsrc;
-            mesgMenu.style.display = 'none';
+            document.getElementById('mesgMenu').style.display = 'none';
         }
     </script>
 </head>
@@ -290,549 +321,6 @@
     <map name="SystemMap">
     </map>
 </center>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302700')"
-     id=W62302700 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62302700 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            109.51
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62513200')"
-     id=W62513200 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62513200 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            18.94
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62411400')"
-     id=W62411400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62411400 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            64.94
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62601200')"
-     id=W62601200 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62601200 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            17.73
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62502600')"
-     id=W62502600 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62502600 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            17.91
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62601600')"
-     id=W62601600 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62601600 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            17.44
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S60113400')"
-     id=W60113400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i60113400 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            17.85
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302300')"
-     id=W62302300 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62302300 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            20.63
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302250')"
-     id=W62302250 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62302250 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            20.94
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 左上显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62304150')"
-     id=W62304150 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <DIV style="position:absolute;text-align:right;" class="normal">
-        108.99
-    </DIV>
-    <TABLE cellSpacing=0 cellPadding=0 border=0 width='40' height='28'>
-        <tr align="right" valign="bottom">
-            <td><img width="10" id=i62304150 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62301500')"
-     id=W62301500 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62301500 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            47.05
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302750')"
-     id=W62302750 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62302750 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            94.86
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62304700')"
-     id=W62304700 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62304700 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            142.59
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62301900')"
-     id=W62301900 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62301900 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            32.91
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62401800')"
-     id=W62401800 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62401800 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            36.61
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62501800')"
-     id=W62501800 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62501800 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            23.61
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62406600')"
-     id=W62406600 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62406600 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            33.72
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302100')"
-     id=W62302100 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62302100 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            24.08
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62402400')"
-     id=W62402400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62402400 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            24.55
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62412000')"
-     id=W62412000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62412000 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            38.05
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62302000')"
-     id=W62302000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62302000 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            26.89
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62505000')"
-     id=W62505000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62505000 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            19.59
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62413000')"
-     id=W62413000 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62413000 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            19.41
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62517400')"
-     id=W62517400 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62517400 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            20.20
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
-
-<!-- 右下显示 -->
-<DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent('S62312250')"
-     id=W62312250 style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">
-    <TABLE cellSpacing=0 cellPadding=0 border=0>
-        <tr align="left">
-            <td><img width="10" id=i62312250 border="0" src="styles/default/images/map/normal.gif"></td>
-        </tr>
-        <tr align="left">
-            <td>
-                <TABLE cellSpacing=0 cellPadding=0 border=0>
-                    <tr align="center">
-                        <td class="normal">
-                            23.79
-                        </td>
-                    </tr>
-                </TABLE>
-            </td>
-        </tr>
-    </TABLE>
-</DIV>
-
 
 <div class="space"></div>
 
@@ -897,12 +385,32 @@
 </div>
 
 <div id="hdgs" style="position:absolute;display:none;z-index:10;left:540;top:275;width:240;border:1;font-size:16px ">
-    <!--河道水情概述-->
-    <fieldset style='padding:10 10;'>
-        <legend>　　全省江河水情概述</legend>
-        　6月17日各江河重点站均在警戒水位以下，其中离警戒水位最近的是于都县 峡山水库站<br>
-
-    </fieldset>
+    <script id="hdgs-content-template" type="text/html">
+        <!--河道水情概述-->
+        <fieldset style='padding:10 10;'>
+            <legend>　　全省江河水情概述</legend>
+            　<%=summarize%><br>
+            <%if (overTopWrzSize>0) {%>
+            <table cellpadding="0" cellspacing="1" align="center" class="main" width="210">
+                <tr>
+                    <th>站名</th>
+                    <th>当前水位</th>
+                    <th>超警戒水位</th>
+                    <th>警戒水位</th>
+                </tr>
+                <% for(var i=0;i< overTopWrz.length;i++) {%>
+                <tr align="left" class='default' onfocusin="this.className='selected'"
+                    onfocusout="this.className='default'">
+                    <td><%=overTopWrz[i].stnm%></td>
+                    <td><%=overTopWrz[i].z%</td>
+                    <td><%=overTopWrz[i].cwrz%</td>
+                    <td><%=overTopWrz[i].wrz%</td>
+                </tr>
+                <%}%>
+            </table>
+            <%}%>
+        </fieldset>
+    </script>
 </div>
 
 <div id="tuli" style="position:absolute;display:none;left:540;top:480;width:240;border:1 ">
@@ -915,277 +423,4 @@
 
 <div class="space"></div>
 </body>
-<script language="javascript">
-
-    cachedList = new Array();
-
-
-    cachedList[0] = new listObj('62302700', '峡山水库', '6月17日 9点30分', '109.51', '', '', '', '—');
-
-    cachedList[1] = new listObj('62513200', '永修', '6月17日 9点0分', '18.94', '', '20.00', '23.48', '');
-
-    cachedList[2] = new listObj('62411400', '上饶', '6月17日 9点0分', '64.94', '', '66.00', '69.39', '');
-
-    cachedList[3] = new listObj('62601200', '星子', '6月17日 9点0分', '17.73', '', '19.00', '22.52', '');
-
-    cachedList[4] = new listObj('62502600', '鄱阳', '6月17日 9点0分', '17.91', '', '19.50', '22.61', '');
-
-    cachedList[5] = new listObj('62601600', '湖口', '6月17日 9点0分', '17.44', '18000', '19.50', '22.59', '↓');
-
-    cachedList[6] = new listObj('60113400', '九江', '6月17日 9点0分', '17.85', '33000', '20.00', '23.03', '—');
-
-    cachedList[7] = new listObj('62302300', '南昌', '6月17日 9点0分', '20.63', '', '23.00', '24.80', '↓');
-
-    cachedList[8] = new listObj('62302250', '外洲', '6月17日 9点0分', '20.94', '11500', '23.50', '25.60', '↓');
-
-    cachedList[9] = new listObj('62304150', '翰林桥', '6月17日 9点30分', '108.99', '203', '112.00', '115.06', '—');
-
-    cachedList[10] = new listObj('62301500', '吉安', '6月17日 9点0分', '47.05', '4400', '50.50', '54.05', '');
-
-    cachedList[11] = new listObj('62302750', '赣州', '6月17日 9点30分', '94.86', '1550', '99.00', '103.29', '—');
-
-    cachedList[12] = new listObj('62304700', '信丰', '6月17日 9点30分', '142.59', '337', '147.00', '147.92', '—');
-
-    cachedList[13] = new listObj('62301900', '新干', '6月17日 9点0分', '32.91', '', '37.50', '39.81', '');
-
-    cachedList[14] = new listObj('62401800', '廖家湾', '6月17日 9点10分', '36.61', '772', '41.30', '42.78', '');
-
-    cachedList[15] = new listObj('62501800', '渡峰坑', '6月17日 9点0分', '23.61', '59', '28.50', '34.27', '');
-
-    cachedList[16] = new listObj('62406600', '娄家村', '6月17日 9点0分', '33.72', '220', '38.80', '41.51', '');
-
-    cachedList[17] = new listObj('62302100', '丰城', '6月17日 9点0分', '24.08', '', '29.60', '31.56', '');
-
-    cachedList[18] = new listObj('62402400', '李家渡', '6月17日 9点0分', '24.55', '1030', '30.50', '33.08', '↓');
-
-    cachedList[19] = new listObj('62412000', '弋阳', '6月17日 9点0分', '38.05', '462', '44.00', '47.93', '');
-
-    cachedList[20] = new listObj('62302000', '樟树', '6月17日 9点0分', '26.89', '7480', '33.00', '34.72', '');
-
-    cachedList[21] = new listObj('62505000', '虎山', '6月17日 9点0分', '19.59', '108', '26.00', '31.18', '');
-
-    cachedList[22] = new listObj('62413000', '梅港', '6月17日 9点0分', '19.41', '1220', '26.00', '29.84', '');
-
-    cachedList[23] = new listObj('62517400', '万家埠', '6月17日 9点0分', '20.20', '130', '27.00', '29.68', '—');
-
-    cachedList[24] = new listObj('62312250', '高安', '6月17日 9点0分', '23.79', '217', '31.00', '33.80', '');
-
-    function changePos() {
-        construction.style.left = document.body.offsetWidth / 2 - 360;
-        construction.style.display = "";
-        tuli.style.left = document.body.offsetWidth / 2 + 58;
-        tuli.style.display = "";
-        hdgs.style.pixelLeft = document.body.offsetWidth / 2 + 60;
-        hdgs.style.display = "";
-
-
-        try {
-            W62302700.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302700'].split(",")[0]);
-            W62302700.style.top = parseFloat(mlist['62302700'].split(",")[1]) - 5;
-            W62302700.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62513200.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62513200'].split(",")[0]);
-            W62513200.style.top = parseFloat(mlist['62513200'].split(",")[1]) - 5;
-            W62513200.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62411400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62411400'].split(",")[0]);
-            W62411400.style.top = parseFloat(mlist['62411400'].split(",")[1]) - 5;
-            W62411400.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62601200.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62601200'].split(",")[0]);
-            W62601200.style.top = parseFloat(mlist['62601200'].split(",")[1]) - 5;
-            W62601200.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62502600.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62502600'].split(",")[0]);
-            W62502600.style.top = parseFloat(mlist['62502600'].split(",")[1]) - 5;
-            W62502600.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62601600.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62601600'].split(",")[0]);
-            W62601600.style.top = parseFloat(mlist['62601600'].split(",")[1]) - 5;
-            W62601600.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W60113400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['60113400'].split(",")[0]);
-            W60113400.style.top = parseFloat(mlist['60113400'].split(",")[1]) - 5;
-            W60113400.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62302300.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302300'].split(",")[0]);
-            W62302300.style.top = parseFloat(mlist['62302300'].split(",")[1]) - 5;
-            W62302300.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62302250.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302250'].split(",")[0]);
-            W62302250.style.top = parseFloat(mlist['62302250'].split(",")[1]) - 5;
-            W62302250.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62304150.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62304150'].split(",")[0]);
-            W62304150.style.top = parseFloat(mlist['62304150'].split(",")[1]) - 5;
-            W62304150.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62301500.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62301500'].split(",")[0]);
-            W62301500.style.top = parseFloat(mlist['62301500'].split(",")[1]) - 5;
-            W62301500.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62302750.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302750'].split(",")[0]);
-            W62302750.style.top = parseFloat(mlist['62302750'].split(",")[1]) - 5;
-            W62302750.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62304700.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62304700'].split(",")[0]);
-            W62304700.style.top = parseFloat(mlist['62304700'].split(",")[1]) - 5;
-            W62304700.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62301900.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62301900'].split(",")[0]);
-            W62301900.style.top = parseFloat(mlist['62301900'].split(",")[1]) - 5;
-            W62301900.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62401800.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62401800'].split(",")[0]);
-            W62401800.style.top = parseFloat(mlist['62401800'].split(",")[1]) - 5;
-            W62401800.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62501800.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62501800'].split(",")[0]);
-            W62501800.style.top = parseFloat(mlist['62501800'].split(",")[1]) - 5;
-            W62501800.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62406600.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62406600'].split(",")[0]);
-            W62406600.style.top = parseFloat(mlist['62406600'].split(",")[1]) - 5;
-            W62406600.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62302100.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302100'].split(",")[0]);
-            W62302100.style.top = parseFloat(mlist['62302100'].split(",")[1]) - 5;
-            W62302100.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62402400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62402400'].split(",")[0]);
-            W62402400.style.top = parseFloat(mlist['62402400'].split(",")[1]) - 5;
-            W62402400.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62412000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62412000'].split(",")[0]);
-            W62412000.style.top = parseFloat(mlist['62412000'].split(",")[1]) - 5;
-            W62412000.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62302000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62302000'].split(",")[0]);
-            W62302000.style.top = parseFloat(mlist['62302000'].split(",")[1]) - 5;
-            W62302000.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62505000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62505000'].split(",")[0]);
-            W62505000.style.top = parseFloat(mlist['62505000'].split(",")[1]) - 5;
-            W62505000.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62413000.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62413000'].split(",")[0]);
-            W62413000.style.top = parseFloat(mlist['62413000'].split(",")[1]) - 5;
-            W62413000.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62517400.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62517400'].split(",")[0]);
-            W62517400.style.top = parseFloat(mlist['62517400'].split(",")[1]) - 5;
-            W62517400.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-        try {
-            W62312250.style.left = (document.body.offsetWidth - 394) / 2 - 40 + parseFloat(mlist['62312250'].split(",")[0]);
-            W62312250.style.top = parseFloat(mlist['62312250'].split(",")[1]) - 5;
-            W62312250.style.display = '';
-        } catch (e) {
-            //alert(""+e.message);
-        }
-
-    }
-
-    changePos();
-
-    var interval;
-
-    interval = setInterval('changePos()', 100);
-
-</script>
 </html>

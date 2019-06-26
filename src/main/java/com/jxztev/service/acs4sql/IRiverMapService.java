@@ -12,7 +12,9 @@ import java.util.List;
  */
 public interface IRiverMapService {
     List<RiverMapResponse> queryRiverMapList();
+
     List<RiverMapResponse> getOverTopWrz(List<RiverMapResponse> list);
 
+    JSONObject riverMapHandler(RiverMapRequest riverMapRequestParams);
 }
 

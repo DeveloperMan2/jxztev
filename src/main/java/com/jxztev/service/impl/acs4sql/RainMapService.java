@@ -32,8 +32,8 @@ public class RainMapService implements IRainMapService {
         } catch (Exception localException1) {
         }
         try {
-            bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            //bgDate = "2019-06-15 08:00:00";
+          bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+            bgDate = "2019-06-15 08:00:00";
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(0f);
@@ -43,9 +43,7 @@ public class RainMapService implements IRainMapService {
         return list;
     }
 
-    public List<RainSummarizeResponse> getStationRainList() {
-        String hourStr = "1";
-        long bt = System.currentTimeMillis();
+    public List<RainSummarizeResponse> getStationRainList(String hourStr, Float rainFlag) {
         List<RainSummarizeResponse> list = new ArrayList();
         String bgDate = null;
         int INT_HOUR = DEFAULT_PERIOD.intValue();
@@ -53,17 +51,16 @@ public class RainMapService implements IRainMapService {
             INT_HOUR = Integer.parseInt(hourStr);
         } catch (Exception localException1) {
         }
-        float rainFlag = 0;
-        if (rainFlag == 0) {
+        if (rainFlag == null) {
             rainFlag = DEFAULT_RAIN_FLAG;
         }
         try {
             bgDate = DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            //bgDate = "2019-06-15 08:00:00";
+            bgDate = "2019-06-15 08:00:00";
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(rainFlag);
-            list = rainSummarizeDao.findCountyRainList(rainSummarizeRequestParams);
+            list = rainSummarizeDao.findStationRainList(rainSummarizeRequestParams);
         } catch (Exception e) {
         }
         return list;
@@ -72,10 +69,11 @@ public class RainMapService implements IRainMapService {
     public List<RainSummarizeResponse> getMaxRainOrderRain(String hourStr, Integer countNum) {
         List<RainSummarizeResponse> list = new ArrayList();
         Map<String, Integer> tmpMap = new HashMap();
-        List<RainSummarizeResponse> rawList = getStationRainList();
+        float rainFlag = 0;
+        List<RainSummarizeResponse> rawList = getStationRainList(hourStr, rainFlag);
         RainSummarizeResponse countyRainValue = null;
         for (int i = 0; i < rawList.size(); i++) {
-            countyRainValue = (RainSummarizeResponse) rawList.get(i);
+            countyRainValue = rawList.get(i);
             String countyname = "未知";
             if (countyRainValue.getCnnm() != null) {
                 countyname = countyRainValue.getCnnm().trim();
