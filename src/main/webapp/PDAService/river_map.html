@@ -73,14 +73,15 @@
     <script src="scripts/template-native.js"></script>
     <script type="text/javascript">
         let dataResult = null, cachedList = null;
-        $(function(){
+        $(function () {
             ajaxHandler();
-            setInterval(ajaxHandler(),300000);
+            setInterval(ajaxHandler(), 300000);
         })
+
         function ajaxHandler() {
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8080/rivermap/riverMapHandler",
+                url: "http://localhost:7004/jxztev/rivermap/riverMapHandler",
                 success: function (response) {
                     if (response['status'] === 1) {
                         var data = response['data'];
@@ -95,6 +96,7 @@
 
             });
         }
+
         function parseHtmlModel(data) {
             //绘制监测点
             var rows = data['rows'], upCodes = data['upCodes'];
@@ -162,7 +164,7 @@
                 document.getElementById('construction').style.display = "";
                 document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 60;
                 document.getElementById('tuli').style.display = "";
-                document.getElementById('hdgs').style.left = document.body.offsetWidth / 2 + 59;
+                document.getElementById('hdgs').style.left = document.body.offsetWidth / 2 - 440;
                 document.getElementById('hdgs').style.display = "";
 
                 if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
@@ -313,7 +315,7 @@
         }
     </script>
 </head>
-<body >
+<body>
 <center>
     <img border="0" id="mainMap" src="styles/default/images/map/riverMap.gif" useMap="#SystemMap">
     <map name="SystemMap">
@@ -383,7 +385,7 @@
     </table>
 </div>
 
-<div id="hdgs" style="position:absolute;display:none;z-index:10;left:540px;top:370px;width:242px;font-size:16px;">
+<div id="hdgs" style="position:absolute;display:none;z-index:10;left:540px;top:10px;width:242px;font-size:16px;">
     <script id="hdgs-content-template" type="text/html">
         <!--河道水情概述-->
         <fieldset style='padding:10 10;border: 1px solid #ccc;border-radius:5px;'>
