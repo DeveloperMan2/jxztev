@@ -51,7 +51,7 @@ public class ReservoirMapController {
             if(i > 0){
                 sbf.append("；");//不是第一个则加；分隔
             }
-            sbf.append(tMap.getCounty())
+            sbf.append(tMap.getCounty() == null ? "" : tMap.getCounty())
                     .append(" <font color='red'>").append(tMap.getStnm()).append("水库</font>")
                     .append(tMap.getHTM()).append("超汛限水位")
                     .append("<font color='red'>").append(tMap.getCfsltdz()).append("</font>").append("米");
@@ -65,7 +65,7 @@ public class ReservoirMapController {
                 ReservoirMapResponse tMap = reservoirList.get(0);
                 sbf = new StringBuffer();
                 sbf.append("各大中型水库均在汛限水位以下，其中离汛限水位最近的是")
-                        .append(tMap.getCounty()).append(" ").append(tMap.getStnm()).append("水库");
+                        .append(tMap.getCounty() == null ? "" : tMap.getCounty()).append(" ").append(tMap.getStnm()).append("水库");
                 if( tMap.getCfsltdz() != null && tMap.getStnm() != "三峡"){
                     sbf.append("，").append(tMap.getHTM()).append("比汛限水位").append(tMap.getCfsltdz()).append("米");
                 }

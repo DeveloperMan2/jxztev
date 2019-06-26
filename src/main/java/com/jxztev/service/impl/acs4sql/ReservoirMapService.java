@@ -48,7 +48,7 @@ private IReservoirMapDao reservoirMapDao;
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ReservoirMapRequest reservoirMapRequestParams = new ReservoirMapRequest();
         reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
-      //  reservoirMapRequestParams.setBgTm("2019-06-23 16:00:00");
+        reservoirMapRequestParams.setBgTm("2019-06-23 16:00:00");
         reservoirMapRequestParams.setEndTm(formatter.format(endTm));
         reservoirMapRequestParams.setMd( DateUtils.getTodayString("MMdd"));
 

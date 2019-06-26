@@ -138,7 +138,7 @@ public class RainSummarizeService implements IRainSummarizeService {
             if(i > 0){
                 reservoirSbf.append("；<br>　　　　　");//不是第一个则加；分隔
             }
-            reservoirSbf.append(reservoirMapResponse.getCounty())
+            reservoirSbf.append(reservoirMapResponse.getCounty() == null ? "" : reservoirMapResponse.getCounty() )
                     .append(" <font color='red'>").append(reservoirMapResponse.getStnm()).append("水库</font>").append(reservoirMapResponse.getTm())
                     .append("超汛限水位").append("<font color='red'>").append(reservoirMapResponse.getCfsltdz()).append("</font>").append("米");
         }
@@ -151,7 +151,7 @@ public class RainSummarizeService implements IRainSummarizeService {
                 reservoirMapResponse = reservoirMapResponseList.get(0);
                 reservoirSbf = new StringBuffer();
                 reservoirSbf.append("各大中型水库均在汛限水位以下，其中离汛限水位最近的是")
-                        .append(reservoirMapResponse.getCounty()).append(" ").append(reservoirMapResponse.getStnm()).append("水库");
+                        .append(reservoirMapResponse.getCounty() == null ? "" : reservoirMapResponse.getCounty()).append(" ").append(reservoirMapResponse.getStnm()).append("水库");
                 if( reservoirMapResponse.getCfsltdz() != null ){
                     reservoirSbf.append("，").append(reservoirMapResponse.getTm()).append("比汛限水位").append(reservoirMapResponse.getCfsltdz()).append("米");
                 }
@@ -180,7 +180,7 @@ public class RainSummarizeService implements IRainSummarizeService {
             if(i > 0){
                 riverSbf.append("；<br>　　　　　");//不是第一个则加；分隔
             }
-            riverSbf.append(riverMapResponse.getCounty())
+            riverSbf.append(riverMapResponse.getCounty() == null ? "" : riverMapResponse.getCounty())
                     .append(" <font color='red'>").append(riverMapResponse.getStnm()).append("站</font>").append(riverMapResponse.getTm())
                     .append("超警戒水位").append("<font color='red'>").append(riverMapResponse.getCwrz()).append("</font>").append("米");
         }
@@ -193,7 +193,7 @@ public class RainSummarizeService implements IRainSummarizeService {
                 riverMapResponse = riverMapResponseList.get(0);
                 riverSbf = new StringBuffer();
                 riverSbf.append("各江河重点站均在警戒水位以下，其中离警戒水位最近的是")
-                        .append(riverMapResponse.getCounty()).append(" ").append(riverMapResponse.getStnm()).append("站");
+                        .append(riverMapResponse.getCounty() == null ? "" : riverMapResponse.getCounty()).append(" ").append(riverMapResponse.getStnm()).append("站");
                 if(riverMapResponse.getCwrz() != null ){
                     riverSbf.append("，").append(riverMapResponse.getTm()).append("比警戒水位").append(riverMapResponse.getCwrz()).append("米");
                 }
