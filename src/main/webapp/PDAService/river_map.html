@@ -73,7 +73,10 @@
     <script src="scripts/template-native.js"></script>
     <script type="text/javascript">
         let dataResult = null, cachedList = null;
-
+        $(function(){
+            ajaxHandler();
+            setInterval(ajaxHandler(),300000);
+        })
         function ajaxHandler() {
             $.ajax({
                 type: "GET",
@@ -92,7 +95,6 @@
 
             });
         }
-
         function parseHtmlModel(data) {
             //绘制监测点
             var rows = data['rows'], upCodes = data['upCodes'];
@@ -311,7 +313,7 @@
         }
     </script>
 </head>
-<body onload="ajaxHandler()">
+<body >
 <center>
     <img border="0" id="mainMap" src="styles/default/images/map/riverMap.gif" useMap="#SystemMap">
     <map name="SystemMap">

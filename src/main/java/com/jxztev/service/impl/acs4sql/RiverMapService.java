@@ -46,7 +46,6 @@ public class RiverMapService implements IRiverMapService {
         riverMapRequestParams.setBgTm(formatter.format(bgTm));
        // riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
         riverMapRequestParams.setEndTm(formatter.format(endTm));
-
         List<String> riverStationsList = new ArrayList<>();
         if (null != riverwayStations && !riverwayStations.equals("")) {
             for (String v : riverwayStations.split(",")) {

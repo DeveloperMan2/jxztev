@@ -4,9 +4,12 @@ import com.jxztev.dao.acs4sql.IRainSummarizeDao;
 import com.jxztev.entity.acs4sql.RainSummarizeRequest;
 import com.jxztev.entity.acs4sql.RainSummarizeResponse;
 import com.jxztev.service.acs4sql.IRainMapService;
+import com.jxztev.utils.DataFormatUtils;
+import com.ztev.commons.date.DateUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +21,10 @@ public class RainMapService implements IRainMapService {
     public static Integer DEFAULT_PERIOD = Integer.valueOf(24);
     public static String JAVA_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
     public static Float DEFAULT_RAIN_FLAG = Float.valueOf(50.0F);
+
+    //河道包含的站点
+    @Value("#{systemConfig[query_tm]}")
+    private String queryTm;
 
     @Autowired
     @Qualifier("rainSummarizeDao")
@@ -32,8 +39,11 @@ public class RainMapService implements IRainMapService {
         } catch (Exception localException1) {
         }
         try {
-          bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            bgDate = "2019-06-15 08:00:00";
+            bgDate =  DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
+            if (DataFormatUtils.isValidDate(queryTm))
+            {
+                bgDate = queryTm;
+            }
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(0f);
@@ -56,7 +66,10 @@ public class RainMapService implements IRainMapService {
         }
         try {
             bgDate = DateFormatUtils.format(new Date(System.currentTimeMillis() - 3600000 * INT_HOUR), JAVA_DATE_PATTERN);
-            bgDate = "2019-06-15 08:00:00";
+            if (DataFormatUtils.isValidDate(queryTm))
+            {
+                bgDate = queryTm;
+            }
             RainSummarizeRequest rainSummarizeRequestParams = new RainSummarizeRequest();
             rainSummarizeRequestParams.setTm(bgDate);
             rainSummarizeRequestParams.setMaxrain(rainFlag);
