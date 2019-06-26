@@ -44,7 +44,7 @@ public class RiverMapService implements IRiverMapService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         RiverMapRequest riverMapRequestParams = new RiverMapRequest();
         riverMapRequestParams.setBgTm(formatter.format(bgTm));
-        riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
+       // riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
         riverMapRequestParams.setEndTm(formatter.format(endTm));
         List<String> riverStationsList = new ArrayList<>();
         if (null != riverwayStations && !riverwayStations.equals("")) {
