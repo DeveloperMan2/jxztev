@@ -52,6 +52,7 @@ public class RiverMapController {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         RiverMapRequest riverMapRequestParams = new RiverMapRequest();
         riverMapRequestParams.setBgTm(formatter.format(bgTm));
+      //  riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
         riverMapRequestParams.setEndTm(formatter.format(endTm));
 
         System.out.println(riverwayStations);

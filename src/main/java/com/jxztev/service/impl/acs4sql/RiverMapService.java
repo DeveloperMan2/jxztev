@@ -153,7 +153,7 @@ public class RiverMapService implements IRiverMapService {
                 if (i > 0) {
                     sbf.append("；");//不是第一个则加；分隔
                 }
-                sbf.append(tMap.getCounty())
+                sbf.append(tMap.getCounty() == null ? "" : tMap.getCounty())
                         .append(" <font color='red'>").append(tMap.getStnm()).append("站</font>")
                         .append(tMap.getHTM()).append("超警戒水位")
                         .append("<font color='red'>").append(tMap.getCwrz()).append("</font>").append("米");
@@ -167,7 +167,7 @@ public class RiverMapService implements IRiverMapService {
                     RiverMapResponse tMap = list.get(0);
                     sbf = new StringBuffer();
                     sbf.append("各江河重点站均在警戒水位以下，其中离警戒水位最近的是")
-                            .append(tMap.getCounty()).append(" ").append(tMap.getStnm()).append("站");
+                            .append(tMap.getCounty() == null ? "" : tMap.getCounty()).append(" ").append(tMap.getStnm()).append("站");
                     if (tMap.getCwrz() != null) {
                         sbf.append("，").append(tMap.getHTM()).append("比警戒水位").append(tMap.getCwrz()).append("米").append("。");
                     }

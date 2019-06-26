@@ -1,363 +1,296 @@
 ﻿<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link href="styles/default/list.css" rel="stylesheet" type="text/css">
-    <title>最新水库水情示意图</title>
-    <style>
-        body {
-            background-color: #FFFFFF;
-            margin-top: 0px;
-            margin-left: 0px;
-            margin-right: 0px;
-            margin-bottom: 0px
-        }
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="styles/default/list.css" rel="stylesheet" type="text/css">
+<title>最新水库水情示意图</title>
+<style>
+	body{background-color:#FFFFFF;margin-top: 0px;margin-left: 0px;margin-right: 0px; margin-bottom: 0px}
+	TD{font-size: 14px;}
+	TR.headtd{font-size: 14px; color: #ffffff;}
+	TR.bodytd{font-size: 14px; color: #000000; font-weight: bold;}
+	TD.warn{font-family: "Fixedsys"; font-size: 14px; color: #ff0000;}
+	div.warn{font-family: "Fixedsys"; font-size: 14px; color: #ff0000;}
+	TD.bodyblack{font-size: 14px; color: #000000; font-weight: bold;}
+	TD.bodyhui{font-size: 14px; color: #333333; font-weight: bold;}
+	TD.normal{font-family: "Fixedsys"; font-size: 14px; color: #222222;}
+	div.normal{font-family: "Fixedsys"; font-size: 14px; color: #222222;}
+	.suoming{line-height:24px; font-size: 14px; color: #000000;}
+</style>
+<script language="javascript" src="scripts/reservoirPos.js"></script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/template-native.js"></script>
+<script language="javascript">
 
-        TD {
-            font-size: 14px;
-        }
+    let dataResult = null, cachedList = null;
+    var tempsrc="";//保存样式
+    var tempstcd="";//保存站号
 
-        TR.headtd {
-            font-size: 14px;
-            color: #ffffff;
-        }
+	$(function(){
+        ajaxHandler();
+       // setInterval(ajaxHandler(),300000);
+	})
 
-        TR.bodytd {
-            font-size: 14px;
-            color: #000000;
-            font-weight: bold;
-        }
+    function ajaxHandler() {
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/reservoirmap/reservoirMapHandler",
+            success: function (response) {
+                if (response['status'] === 1) {
+                    var data = response['data'];
+                    dataResult = data;
+                    //解析数据结构并生成相应的页面元素
+                    parseHtmlModel(data);
+                    changePos();
+                }
+            },
+            error: function () {
+            }
 
-        TD.warn {
-            font-family: "Fixedsys";
-            font-size: 14px;
-            color: #ff0000;
-        }
-
-        div.warn {
-            font-family: "Fixedsys";
-            font-size: 14px;
-            color: #ff0000;
-        }
-
-        TD.bodyblack {
-            font-size: 14px;
-            color: #000000;
-            font-weight: bold;
-        }
-
-        TD.bodyhui {
-            font-size: 14px;
-            color: #333333;
-            font-weight: bold;
-        }
-
-        TD.normal {
-            font-family: "Fixedsys";
-            font-size: 14px;
-            color: #222222;
-        }
-
-        div.normal {
-            font-family: "Fixedsys";
-            font-size: 14px;
-            color: #222222;
-        }
-
-        .suoming {
-            line-height: 24px;
-            font-size: 14px;
-            color: #000000;
-        }
-    </style>
-    <script language="javascript" src="scripts/reservoirPos.js"></script>
-    <script src="scripts/jquery.min.js"></script>
-    <script src="scripts/template-native.js"></script>
-    <script language="javascript">
-
-        let dataResult = null, cachedList = null;
-        var tempsrc = "";//保存样式
-        var tempstcd = "";//保存站号
-
-        $(function () {
-            ajaxHandler();
-            // setInterval(ajaxHandler(),300000);
         });
+    }
 
-        function ajaxHandler() {
-            $.ajax({
-                type: "GET",
-                url: "http://localhost:7004/jxztev/reservoirmap/reservoirMapHandler",
-                success: function (response) {
-                    if (response['status'] === 1) {
-                        var data = response['data'];
-                        dataResult = data;
-                        //解析数据结构并生成相应的页面元素
-                        parseHtmlModel(data);
-                        changePos();
-                    }
-                },
-                error: function () {
+    function parseHtmlModel(data) {
+        //绘制监测点
+        var rows = data['rows'], upCodes = data['upCodes'];
+        if (rows && rows.length > 0) {
+            cachedList = new Array();
+
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                cachedList[i] = new listObj(row['stcd'], row['stnm'], row['tm'], row['rz'], row['inq'], row['otq'], row['fsltdz'], row['rwptn']);
+                var htmlElement = '';
+                if (upCodes.indexOf(row['stcd']) === -1) {
+                    htmlElement = ' <!-- 右下显示 -->\n' +
+                        '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
+                        '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
+                        '                <TABLE cellSpacing=0 cellPadding=0 border=0>\n' +
+                        '                <tr align="left">\n' +
+                        '                <td><img width="10" id=\'i' + row['stcd'] + '\' border="0" src="styles/default/images/map/' + row['img'] + '"></td>\n' +
+                        '                </tr>\n' +
+                        '                <tr align="left">\n' +
+                        '                <td >\n' +
+                        '                <TABLE cellSpacing=0 cellPadding=0 border=0 >\n' +
+                        '                <tr align="center">\n' +
+                        '                <td class="' + row['style'] + '">\n' +
+                        '                ' + row['rz'] + '\n' +
+                        '                </td>\n' +
+                        '                </tr>\n' +
+                        '                </TABLE>\n' +
+                        '                </td></tr>\n' +
+                        '            </TABLE>\n' +
+                        '            </DIV>';
+                } else if (upCodes.indexOf(row['stcd']) !== -1) {
+                    htmlElement = '               <!-- 左上显示 -->\n' +
+                        '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
+                        '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
+                        '                <DIV style="position:absolute;text-align:right;" class="' + row['style'] + '">\n' +
+                        '                <fmt:formatNumber value="' + row['rz'] + '" minFractionDigits="2" maxFractionDigits="2"/>\n' +
+                        '                </DIV>\n' +
+                        '                <TABLE cellSpacing=0 cellPadding=0 border=0 width=\'40\' height=\'28\'>\n' +
+                        '                <tr align="right" valign="bottom">\n' +
+                        '                <td><img width="10" id=\'i' + row['stcd'] + '\' border="0" src="styles/default/images/map/' + row['img'] + '"></td>\n' +
+                        '                </tr>\n' +
+                        '                </TABLE>\n' +
+                        '                </DIV>';
                 }
-
-            });
-        }
-
-        function parseHtmlModel(data) {
-            //绘制监测点
-            var rows = data['rows'], upCodes = data['upCodes'];
-            if (rows && rows.length > 0) {
-                cachedList = new Array();
-
-                for (var i = 0; i < rows.length; i++) {
-                    var row = rows[i];
-                    cachedList[i] = new listObj(row['stcd'], row['stnm'], row['tm'], row['rz'], row['inq'], row['otq'], row['fsltdz'], row['rwptn']);
-                    var htmlElement = '';
-                    if (upCodes.indexOf(row['stcd']) === -1) {
-                        htmlElement = ' <!-- 右下显示 -->\n' +
-                            '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
-                            '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8;HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
-                            '                <TABLE cellSpacing=0 cellPadding=0 border=0>\n' +
-                            '                <tr align="left">\n' +
-                            '                <td><img width="10" id=\'i' + row['stcd'] + '\' border="0" src="styles/default/images/map/' + row['img'] + '"></td>\n' +
-                            '                </tr>\n' +
-                            '                <tr align="left">\n' +
-                            '                <td >\n' +
-                            '                <TABLE cellSpacing=0 cellPadding=0 border=0 >\n' +
-                            '                <tr align="center">\n' +
-                            '                <td class="' + row['style'] + '">\n' +
-                            '                ' + row['rz'] + '\n' +
-                            '                </td>\n' +
-                            '                </tr>\n' +
-                            '                </TABLE>\n' +
-                            '                </td></tr>\n' +
-                            '            </TABLE>\n' +
-                            '            </DIV>';
-                    } else if (upCodes.indexOf(row['stcd']) !== -1) {
-                        htmlElement = '               <!-- 左上显示 -->\n' +
-                            '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
-                            '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
-                            '                <DIV style="position:absolute;text-align:right;" class="' + row['style'] + '">\n' +
-                            '                <fmt:formatNumber value="' + row['rz'] + '" minFractionDigits="2" maxFractionDigits="2"/>\n' +
-                            '                </DIV>\n' +
-                            '                <TABLE cellSpacing=0 cellPadding=0 border=0 width=\'40\' height=\'28\'>\n' +
-                            '                <tr align="right" valign="bottom">\n' +
-                            '                <td><img width="10" id=\'i' + row['stcd'] + '\' border="0" src="styles/default/images/map/' + row['img'] + '"></td>\n' +
-                            '                </tr>\n' +
-                            '                </TABLE>\n' +
-                            '                </DIV>';
-                    }
-                    $('body').append(htmlElement);
-                }
+                $('body').append(htmlElement);
             }
-
-            <!--水库水情概述-->
-            var summarize = data['summarize'], overTopFLZSize = data['overTopFLZSize'], overTopFLZ = data['overTopFLZ'];
-            var hdgsContentTemplate = template('skgs-content-template', {
-                overTopFLZSize: overTopFLZSize,
-                overTopFLZ: overTopFLZ
-            });
-            $('#skgs').html(hdgsContentTemplate);
-            $('#summarize').html(summarize);
         }
 
-        function changePos() {
-            if (document.readyState === 'complete' && document.getElementById('construction')) {
-                document.getElementById('construction').style.left = document.body.offsetWidth / 2 - 380;
-                document.getElementById('construction').style.display = "";
-                document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 60;
-                document.getElementById('tuli').style.display = "";
-                document.getElementById('skgs').style.left = document.body.offsetWidth / 2 -440;
-                document.getElementById('skgs').style.display = "";
+        <!--水库水情概述-->
+        var summarize = data['summarize'], overTopFLZSize = data['overTopFLZSize'], overTopFLZ = data['overTopFLZ'];
+        var hdgsContentTemplate = template('skgs-content-template', {
+            overTopFLZSize: overTopFLZSize,
+            overTopFLZ: overTopFLZ
+        });
+        $('#skgs').html(hdgsContentTemplate);
+        $('#summarize').html(summarize);
+    }
 
-                if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
-                    for (let i = 0; i < dataResult['rows'].length; i++) {
-                        var row = dataResult['rows'][i];
-                        try {
-                            var stcdDom = document.getElementById('W' + row['stcd']);
-                            if (stcdDom) {
-                                stcdDom.style.left = (document.body.offsetWidth - 459) / 2 + parseFloat(mlist[row['stcd']].split(",")[0]);
-                                stcdDom.style.top = parseFloat(mlist[row['stcd']].split(",")[1]) - 5;
-                                stcdDom.style.display = '';
-                            }
-                        } catch (e) {
+    function changePos() {
+        if (document.readyState === 'complete' && document.getElementById('construction')) {
+            document.getElementById('construction').style.left = document.body.offsetWidth / 2 - 340;
+            document.getElementById('construction').style.display = "";
+            document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 60;
+            document.getElementById('tuli').style.display = "";
+            document.getElementById('skgs').style.left = document.body.offsetWidth / 2 - 430;
+            document.getElementById('skgs').style.display = "";
+
+            if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
+                for (let i = 0; i < dataResult['rows'].length; i++) {
+                    var row = dataResult['rows'][i];
+                    try {
+                        var stcdDom = document.getElementById('W' + row['stcd']);
+                        if (stcdDom) {
+                            stcdDom.style.left = (document.body.offsetWidth - 459) / 2  + parseFloat(mlist[row['stcd']].split(",")[0]);
+                            stcdDom.style.top = parseFloat(mlist[row['stcd']].split(",")[1]) - 5;
+                            stcdDom.style.display = '';
                         }
+                    } catch (e) {
                     }
                 }
             }
         }
+    }
+	function listObj(sStcdt,sStnm,sYmdhm, sZ, sQ, sW, sS){
+		this.Stcdt = "S" + sStcdt;//站号
+		this.Stnm  = sStnm;//站名
+		this.Ymdhm = sYmdhm;//时间
+		this.Z     = sZ;//水位
+		this.Q     = sQ;//流量(入库流量/出库流量)
+		this.W     = sW;//警戒水位(汛限水位)
+		this.S     = sS;//水势
+	}
 
-        setInterval('changePos()', 100);
+	//-----------------------------------------------------------
+	//在记录集中查找记录,找到返回值>=0, 否则为-1
+	//-----------------------------------------------------------		
+	function find(findStr){		
+		var str = findStr;
+		var found=false;
+		for (var i = 0; i < cachedList.length; i++) {
+			if (cachedList[i].Stcdt==str ){
+				found=true;
+				break;
+			}			
+		}
+		if (found){
+			return i;
+		}
+		else{
+			return -1;
+		}
+	}
+	
+	//找到该站点的信息，改变菜单的内容
+	function changeMenuContent(sId){
+		//根据area的ID找到该站点的信息
+		var iRet = find(sId);
+		if (iRet >= 0 ){
+			tmpstr = sId.replace("S","i");
+			tempstcd = tmpstr;
+			tempsrc=document.getElementById(tmpstr).src;
+			document.getElementById(tmpstr).src='styles/default/images/map/green.gif'
+			//改变菜单的内容
+			document.getElementById("stnm").innerText  = cachedList[iRet].Stnm;
+			document.getElementById("ymdhm").innerText = cachedList[iRet].Ymdhm;
+			document.getElementById("z").innerText = cachedList[iRet].Z;
+			document.getElementById("q").innerText = cachedList[iRet].Q;
+			document.getElementById("w").innerText = cachedList[iRet].W;
+			document.getElementById("s").innerText = cachedList[iRet].S;
+			//以菜单形式显示该站的信息
+			displayMenu();
+		}
+		else{
+			window.alert("没有找到该站点的信息!"); 
+		}
+	}
+	
+	//显示菜单
+	function displayMenu(){
+	   var iY = window.event.y;
+	   if ( window.event.y + document.body.scrollTop + 52 + 40 > document.body.offsetHeight - 200  ){
+			iY = iY + document.body.scrollTop - 100;
+		}else{
+			iY = iY + 40;
+		}
+	   var iX = document.body.offsetWidth/2 - 240;
+	   $('#mesgMenu').css('left',iX);
+	   $('#mesgMenu').css('top',iY);
+       $('#mesgMenu').css('zIndex',100);
+       $('#mesgMenu').css('display', "");
+	}
 
-        function listObj(sStcdt, sStnm, sYmdhm, sZ, sQ, sW, sS) {
-            this.Stcdt = "S" + sStcdt;//站号
-            this.Stnm = sStnm;//站名
-            this.Ymdhm = sYmdhm;//时间
-            this.Z = sZ;//水位
-            this.Q = sQ;//流量(入库流量/出库流量)
-            this.W = sW;//警戒水位(汛限水位)
-            this.S = sS;//水势
-        }
-
-        //-----------------------------------------------------------
-        //在记录集中查找记录,找到返回值>=0, 否则为-1
-        //-----------------------------------------------------------
-        function find(findStr) {
-            var str = findStr;
-            var found = false;
-            for (var i = 0; i < cachedList.length; i++) {
-                if (cachedList[i].Stcdt == str) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                return i;
-            } else {
-                return -1;
-            }
-        }
-
-        //找到该站点的信息，改变菜单的内容
-        function changeMenuContent(sId) {
-            //根据area的ID找到该站点的信息
-            var iRet = find(sId);
-            if (iRet >= 0) {
-                tmpstr = sId.replace("S", "i");
-                tempstcd = tmpstr;
-                tempsrc = document.getElementById(tmpstr).src;
-                document.getElementById(tmpstr).src = 'styles/default/images/map/green.gif'
-                //改变菜单的内容
-                document.getElementById("stnm").innerText = cachedList[iRet].Stnm;
-                document.getElementById("ymdhm").innerText = cachedList[iRet].Ymdhm;
-                document.getElementById("z").innerText = cachedList[iRet].Z;
-                document.getElementById("q").innerText = cachedList[iRet].Q;
-                document.getElementById("w").innerText = cachedList[iRet].W;
-                document.getElementById("s").innerText = cachedList[iRet].S;
-                //以菜单形式显示该站的信息
-                displayMenu();
-            } else {
-                window.alert("没有找到该站点的信息!");
-            }
-        }
-
-        //显示菜单
-        function displayMenu() {
-            var iY = window.event.y;
-            if (window.event.y + document.body.scrollTop + 52 + 40 > document.body.offsetHeight - 200) {
-                iY = iY + document.body.scrollTop - 100;
-            } else {
-                iY = iY + 40;
-            }
-            var iX = document.body.offsetWidth / 2 - 240;
-            $('#mesgMenu').css('left', iX);
-            $('#mesgMenu').css('top', iY);
-            $('#mesgMenu').css('zIndex', 100);
-            $('#mesgMenu').css('display', "");
-        }
-
-        function makeMenuHidden() {
-            $('#' + tempstcd).attr('src', tempsrc);
-            $('#mesgMenu').css('display', 'none');
-        }
-    </script>
+	function makeMenuHidden() {
+        $('#'+tempstcd).attr('src',tempsrc);
+        $('#mesgMenu').css('display','none');
+	}
+	</script>
 </head>
 <body>
 <center>
-    <img border="0" id="mainMap" src="styles/default/images/map/reservoirMap.gif" useMap="#SystemMap">
-    <map name="SystemMap">
-    </map>
+<img border="0" id="mainMap" src="styles/default/images/map/reservoirMap.gif" useMap="#SystemMap">
+  <map name="SystemMap">
+  </map>
 </center>
 <div class="space"></div>
 <div id="mesgMenu" style="position:absolute;display:none;z-index:100;width:495px;background-Color:menu; "
-     onMouseOut="makeMenuHidden()" onMouseOver="makeMenuHidden()">
-    <TABLE cellSpacing=0 cellPadding=0 bgColor=#ffffcc border=0>
-        <TBODY>
-        <TR bgColor=#003333>
-            <TD width=73 height=28 align=center id="td_stnm">
-                <span align=center><FONT color=#ffffff>库名</FONT></span>
-            </TD>
-            <TD width=130 align=center id="td_ymdhm">
-                <span><FONT color=#ffffff>时间</FONT></span>
-            </TD>
-            <TD width=62 align=center id="td_z">
-                <span><FONT color=#ffffff>库内水位</FONT></span>
-            </TD>
-            <TD width=80 align=center id="td_w">
-                <span><FONT color=#ffffff>汛限水位</FONT></span>
-            </TD>
-            <TD width=100 align=center id="td_q">
-                <span><FONT color=#ffffff>入库/出库流量</FONT></span>
-            </TD>
-            <TD width=80 align=center id="td_s">
-                <span><FONT color=#ffffff>水势</FONT></span>
-            </TD>
-        </TR>
-        <TR>
-            <TD height=24 id="stnm" align=center class="bodyblack">
-            </TD>
-            <TD bgColor=#ffffe8 height=24 id="ymdhm" align=center class="bodyhui">
-            </TD>
-            <TD bgColor=#ffffe8 height=24 id="z" align=center class="bodyblack">
-            </TD>
-            <TD bgColor=#ffffe8 height=24 id="w" align=center class="bodyblack">
-            </TD>
-            <TD bgColor=#ffffe8 height=24 id="q" align=center class="bodyblack">
-            </TD>
-            <TD bgColor=#ffffe8 height=24 id="s" align=center class="bodyblack">
-            </TD>
-        </TR>
-        </TBODY>
-    </TABLE>
+	onMouseOut="makeMenuHidden()" onMouseOver="makeMenuHidden()">
+<TABLE cellSpacing=0 cellPadding=0 bgColor=#ffffcc border=0>
+  <TBODY>
+  <TR bgColor=#003333>
+    <TD width=73 height=28 align=center id = "td_stnm">
+      <span align=center><FONT color=#ffffff>库名</FONT></span>
+      </TD>
+    <TD width=130 align=center id = "td_ymdhm">
+      <span><FONT color=#ffffff>时间</FONT></span>
+      </TD>
+    <TD width=62 align=center id = "td_z">
+      <span><FONT color=#ffffff>库内水位</FONT></span>
+      </TD>
+      <TD width=80 align=center id = "td_w">
+      <span><FONT color=#ffffff>汛限水位</FONT></span>
+      </TD>
+	 <TD width=100 align=center id = "td_q">
+      <span><FONT color=#ffffff>入库/出库流量</FONT></span>
+      </TD>
+      <TD width=80 align=center id = "td_s">
+      <span><FONT color=#ffffff>水势</FONT></span>
+      </TD>
+</TR>
+  <TR>
+    <TD height=24 id="stnm" align=center class="bodyblack">
+    </TD>
+    <TD bgColor=#ffffe8 height=24 id="ymdhm" align=center class="bodyhui">
+    </TD>
+    <TD bgColor=#ffffe8 height=24 id="z" align=center class="bodyblack">
+    </TD>
+    <TD bgColor=#ffffe8 height=24 id="w" align=center class="bodyblack">
+    </TD>
+    <TD bgColor=#ffffe8 height=24 id="q" align=center class="bodyblack">
+    </TD>
+    <TD bgColor=#ffffe8 height=24 id="s" align=center class="bodyblack">
+    </TD>
+</TR></TBODY></TABLE>
 </div>
 
-<div id="construction"
-     style="position:absolute;display:none;left:520px;top:475px;width:175px;border: 1px solid #ccc;border-radius:5px;font-size:16px">
-    <table>
-        <tr>
-            <td class="suoming"><span style="color: #30899F; font-weight:bold;">操作提示：</span><br>
-                　　当鼠标移至水库站或水位数据时，系统自动显示该水库的水位、汛限水位、入库/出库流量、水势信息。
+<div id="construction" style="position:absolute;display:none;left:520px;top:475px;width:175px;border:1px;font-size:16px">
+  <table>
+    <tr><td class="suoming"><span style="color: #30899F; font-weight:bold;">操作提示：</span><br>
+    　　当鼠标移至水库站或水位数据时，系统自动显示该水库的水位、汛限水位、入库/出库流量、水势信息。
+    
+    </td></tr>
+ </table>
+</div>
 
-            </td>
+<div id="skgs" style="position:absolute;z-index:10;left:520px;top:10px;width:240px;border:1px;font-size:16px">
+<!--水库水情概述-->
+	<script id="skgs-content-template" type="text/html">
+<fieldset style='padding:10px 10px;'>
+<legend>　全省重点水库水情概述</legend>
+　<span id="summarize"></span><br>
+	<%if (overTopFLZSize > 0){%>
+		<table cellpadding="0" cellspacing="1" align="center" class="main" width="210">
+		<tr><th>水库</th><th>比汛限水位</th><th>前汛</th><th>后汛</th></tr>
+		<%for(var i = 0; i < overTopFLZ.length; i++){
+			var row = overTopFLZ[i];
+		%>
+		<tr align="left" class='default' onfocusin="this.className='selected'" onfocusout="this.className='default'">
+		<td><%=row.stnm%></td><td><%=row.cfsltdz%></td><td><%=row.ffsltdz%></td><td><%=row.bfsltdz%></td>
         </tr>
-    </table>
-</div>
-
-<div id="skgs" style="position:absolute;z-index:10;left:520px;top:10px;width:242px;font-size:16px">
-    <!--水库水情概述-->
-    <script id="skgs-content-template" type="text/html">
-        <fieldset style='padding:10px 10px;border: 1px solid #ccc;border-radius:5px;'>
-            <legend style="text-align: center;font-weight: bold">全省重点水库水情概述</legend>
-            　<span id="summarize"></span><br>
-            <%if (overTopFLZSize > 0){%>
-            <table cellpadding="0" cellspacing="1" align="center" class="main" width="210">
-                <tr>
-                    <th>水库</th>
-                    <th>比汛限水位</th>
-                    <th>前汛</th>
-                    <th>后汛</th>
-                </tr>
-                <%for(var i = 0; i < overTopFLZ.length; i++){
-                var row = overTopFLZ[i];
-                %>
-                <tr align="left" class='default' onfocusin="this.className='selected'"
-                    onfocusout="this.className='default'">
-                    <td><%=row.stnm%></td>
-                    <td><%=row.cfsltdz%></td>
-                    <td><%=row.ffsltdz%></td>
-                    <td><%=row.bfsltdz%></td>
-                </tr>
-            </table>
-            <%}}%>
-        </fieldset>
-    </script>
+        <%}%>
+		</table>
+    <%}%>
+</fieldset>
+</script>
 </div>
 
 <div id="tuli" style="position:absolute;display:none;left:540px;top:480px;width:240px;border:1px">
-    <img src="styles/default/images/map/reservoirtuli.gif">
-    <table>
-        <td align="center" valign="middle">&nbsp;
-        </td>
-    </table>
+  <img src="styles/default/images/map/reservoirtuli.gif">
+  <table>
+    <td align="center" valign="middle">&nbsp;
+    </td>
+ </table>
 </div>
 
 <div class="space"></div>

@@ -81,7 +81,7 @@
         function ajaxHandler() {
             $.ajax({
                 type: "GET",
-                url: "http://localhost:7004/jxztev/rivermap/riverMapHandler",
+                url: "http://localhost:8080/rivermap/riverMapHandler",
                 success: function (response) {
                     if (response['status'] === 1) {
                         var data = response['data'];
@@ -151,11 +151,11 @@
             <!--河道水情概述-->
             var summarize = data['summarize'], overTopWrzSize = data['overTopWrzSize'], overTopWrz = data['overTopWrz'];
             var hdgsContentTemplate = template('hdgs-content-template', {
-                summarize: summarize,
                 overTopWrzSize: overTopWrzSize,
                 overTopWrz: overTopWrz
             });
-            document.getElementById("hdgs").innerHTML = hdgsContentTemplate;
+            $("#hdgs").html(hdgsContentTemplate);
+            $("#summarize").html(summarize);
         }
 
         function changePos() {
@@ -388,9 +388,9 @@
 <div id="hdgs" style="position:absolute;display:none;z-index:10;left:540px;top:10px;width:242px;font-size:16px;">
     <script id="hdgs-content-template" type="text/html">
         <!--河道水情概述-->
-        <fieldset style='padding:10 10;border: 1px solid #ccc;border-radius:5px;'>
+        <fieldset style='padding:10px 10px;border: 1px solid #ccc;border-radius:5px;'>
             <legend style="text-align: center;font-weight: bold">全省江河水情概述</legend>
-            　<%=summarize%><br>
+            <span id="summarize"></span><br>
             <%if (overTopWrzSize>0) {%>
             <table cellpadding="0" cellspacing="1" align="center" class="main" width="210">
                 <tr>
@@ -403,9 +403,9 @@
                 <tr align="left" class='default' onfocusin="this.className='selected'"
                     onfocusout="this.className='default'">
                     <td><%=overTopWrz[i].stnm%></td>
-                    <td><%=overTopWrz[i].z%</td>
-                    <td><%=overTopWrz[i].cwrz%</td>
-                    <td><%=overTopWrz[i].wrz%</td>
+                    <td><%=overTopWrz[i].z%></td>
+                    <td><%=overTopWrz[i].cwrz%></td>
+                    <td><%=overTopWrz[i].wrz%></td>
                 </tr>
                 <%}%>
             </table>
