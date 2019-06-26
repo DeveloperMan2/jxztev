@@ -47,10 +47,14 @@ private IReservoirMapDao reservoirMapDao;
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ReservoirMapRequest reservoirMapRequestParams = new ReservoirMapRequest();
-        reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
-        //reservoirMapRequestParams.setBgTm("2019-06-23 16:00:00");
-        reservoirMapRequestParams.setEndTm(formatter.format(endTm));
-        reservoirMapRequestParams.setMd( DateUtils.getTodayString("MMdd"));
+        //reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
+        //reservoirMapRequestParams.setEndTm(formatter.format(endTm));
+        //reservoirMapRequestParams.setMd( DateUtils.getTodayString("MMdd"));
+        //todo 示例数据，仅供测试
+        reservoirMapRequestParams.setBgTm("2019-06-15 08:00:00");
+        reservoirMapRequestParams.setEndTm("2019-06-15 08:00:00");
+        reservoirMapRequestParams.setMd("0608");
+
 
         List<String> reservoirStationsList = new ArrayList<>();
         if (null != reservoirStations && !reservoirStations.equals("")) {
