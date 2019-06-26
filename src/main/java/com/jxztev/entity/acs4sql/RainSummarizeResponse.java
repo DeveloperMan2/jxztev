@@ -48,5 +48,15 @@ public class RainSummarizeResponse{
 	public void setMaxrain(Float maxrain) {
 		this.maxrain = maxrain;
 	}
+
+	public String getAddvcd() {
+		return addvcd;
+	}
+
+	public void setAddvcd(String addvcd) {
+		this.addvcd = addvcd;
+	}
+
+	private String addvcd;
 	
 }

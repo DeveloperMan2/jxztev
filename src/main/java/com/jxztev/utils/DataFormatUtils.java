@@ -5,6 +5,8 @@ package com.jxztev.utils;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 
 public class DataFormatUtils {
@@ -246,6 +248,17 @@ public class DataFormatUtils {
 
     }
 
+    public static boolean isValidDate(String str) {
+        boolean convertSuccess=true;
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            format.setLenient(false);
+            format.parse(str);
+        } catch (ParseException e) {
+            convertSuccess=false;
+        }
+        return convertSuccess;
+    }
 
     public static void main(String[] arg) {
         String g = "4254252.11255653";

@@ -71,14 +71,14 @@ public class RiverMapResponse {
         this.z = z;
     }
 
-    @ApiModelProperty(value = "cwrz,这是一个别名变量。", example = "1")
-    private Double cwrz;
+    @ApiModelProperty(value = "cwrz,这是一个别名变量。")
+    private String cwrz;
 
-    public Double getCwrz() {
+    public String getCwrz() {
         return cwrz;
     }
 
-    public void setCwrz(Double cwrz) {
+    public void setCwrz(String cwrz) {
         this.cwrz = cwrz;
     }
 

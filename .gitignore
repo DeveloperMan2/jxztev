@@ -25,4 +25,5 @@ hs_err_pid*
 /.idea
 src/main/webapp/PDAService/.idea/workspace.xml
 src/main/webapp/PDAService/.idea/workspace.xml
+/.gitignore
 src/main/webapp/PDAService/.idea/workspace.xml

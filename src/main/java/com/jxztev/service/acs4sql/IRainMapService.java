@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface IRainMapService {
     List<RainSummarizeResponse> getCountyRainList(String hourStr);
-    List<RainSummarizeResponse> getStationRainList();
+    List<RainSummarizeResponse> getStationRainList(String hourStr, Float rainFlag);
     List<RainSummarizeResponse> getMaxRainOrderRain(String hourStr, Integer countNum);
 
 }

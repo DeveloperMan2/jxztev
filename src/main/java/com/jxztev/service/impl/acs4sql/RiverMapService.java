@@ -44,9 +44,8 @@ public class RiverMapService implements IRiverMapService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         RiverMapRequest riverMapRequestParams = new RiverMapRequest();
         riverMapRequestParams.setBgTm(formatter.format(bgTm));
-        //riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
+       // riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
         riverMapRequestParams.setEndTm(formatter.format(endTm));
-
         List<String> riverStationsList = new ArrayList<>();
         if (null != riverwayStations && !riverwayStations.equals("")) {
             for (String v : riverwayStations.split(",")) {
@@ -126,7 +125,7 @@ public class RiverMapService implements IRiverMapService {
 
                     if (tMap.getCwrz() != null) {
                         double CWRZ = DataFormatUtils.getRound(tMap.getCwrz(), 2).doubleValue();
-                        tMap.setCwrz(Double.valueOf(CWRZ));
+                        tMap.setCwrz(String.valueOf(CWRZ));
 
                         if (CWRZ >= 0.0D) {
                             tMap.setStyle("warn");

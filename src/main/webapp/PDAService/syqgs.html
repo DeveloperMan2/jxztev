@@ -12,31 +12,31 @@
 </style>
 	<script>
         $(function () {
+            ajaxHandler();
+            setInterval(ajaxHandler(),300000);
+        })
+
+        function ajaxHandler() {
             var myDate = new Date();
             var dateStr = myDate.getFullYear()+"年"+(myDate.getMonth()+1)+"月"+myDate.getDate()+"日";
             $('#date').text(dateStr);
-
-            function ajaxHandler() {
-                $.ajax({
-                    type: "GET",
-                    url: "http://localhost:8080/rainsummarize/rainSummarizeHandler",
-                    success: function (response) {
-                        if (response['status'] === 1) {
-                            var data = response['data'];
-                            //解析数据结构并生成相应的页面元素
-                            $("#rain").html("雨情："+data.rain);
-                            $("#river").html("江河水情："+data.river);
-                            $("#reservoir").html("水库水情："+data.reservoir);
-                        }
-                    },
-                    error: function () {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8080/rainsummarize/rainSummarizeHandler",
+                success: function (response) {
+                    if (response['status'] === 1) {
+                        var data = response['data'];
+                        //解析数据结构并生成相应的页面元素
+                        $("#rain").html("雨情："+data.rain);
+                        $("#river").html("江河水情："+data.river);
+                        $("#reservoir").html("水库水情："+data.reservoir);
                     }
+                },
+                error: function () {
+                }
 
-                });
-            }
-
-            ajaxHandler();
-        })
+            });
+        }
 	</script>
 
 </head>
@@ -52,7 +52,7 @@
 	<td>
       <table width="100%" border="0">
         <tr>
-          <td><BR><fieldset style='padding:10 10;'>
+          <td><BR><fieldset style='padding:10px 10px;'>
 			  <span class="style1"><span id="rain"></span><br>
 			<br>
 			<span id="river"></span><br>

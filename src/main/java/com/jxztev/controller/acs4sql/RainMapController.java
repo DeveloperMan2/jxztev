@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Date;
 import java.util.List;
 
 @Api(value = "RainMap", description = "RainMap接口", tags = "雨量地图")
@@ -42,12 +43,17 @@ public class RainMapController {
         }
 
         //取出县代码、县名、最大雨量、平均雨量
-        List<RainSummarizeResponse> countRainList = rainMapService.getCountyRainList(queryHour);
-        List<RainSummarizeResponse> maxRainList = rainMapService.getMaxRainOrderRain(queryHour, 20);
+        List<RainSummarizeResponse> countRainList = rainMapService.getCountyRainList(String.valueOf(INT_HOUR));
+        List<RainSummarizeResponse> maxRainList = rainMapService.getMaxRainOrderRain(String.valueOf(INT_HOUR), 20);
+
+        String bgTM = DateFormatUtils.format(DateUtils.addHours(new Date(), -INT_HOUR), "M月d日H点");
+        String endTM = DateFormatUtils.format(new Date(), "d日H点");//结束时间
+        String queryTm = bgTM + "~" + endTM;
 
         JSONObject data = new JSONObject();
         data.put("countRainList", countRainList);
         data.put("maxRainList", maxRainList);
+        data.put("queryTm",queryTm);
 
         jo.put("data", data);
         jo.put("status", 1);// 1-成功， 0-失败
