@@ -166,7 +166,7 @@
                 document.getElementById('construction').style.display = "";
                 document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 60;
                 document.getElementById('tuli').style.display = "";
-                document.getElementById('skgs').style.left = document.body.offsetWidth / 2 + 59;
+                document.getElementById('skgs').style.left = document.body.offsetWidth / 2 -440;
                 document.getElementById('skgs').style.display = "";
 
                 if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
@@ -322,7 +322,7 @@
     </table>
 </div>
 
-<div id="skgs" style="position:absolute;z-index:10;left:520px;top:370px;width:242px;font-size:16px">
+<div id="skgs" style="position:absolute;z-index:10;left:520px;top:10px;width:242px;font-size:16px">
     <!--水库水情概述-->
     <script id="skgs-content-template" type="text/html">
         <fieldset style='padding:10px 10px;border: 1px solid #ccc;border-radius:5px;'>
