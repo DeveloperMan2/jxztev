@@ -6,7 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel(value = "FindSlideRainRequest", description = "FindSlideRain接口请求类")
 public class FindSlideRainRequest {
-    @ApiModelProperty(value = "hours,小时。")
+    @ApiModelProperty(value = "hours,小时。", example = "1")
     private Integer hours;
 
     public Integer getHours() {
@@ -17,7 +17,7 @@ public class FindSlideRainRequest {
         this.hours = hours;
     }
 
-    @ApiModelProperty(value = "period,周期。")
+    @ApiModelProperty(value = "period,周期。", example = "1")
     private Integer period;
 
     public Integer getPeriod() {
@@ -28,7 +28,7 @@ public class FindSlideRainRequest {
         this.period = period;
     }
 
-    @ApiModelProperty(value = "drp。")
+    @ApiModelProperty(value = "drp。", example = "1")
     private Float drp;
 
     public Float getDrp() {

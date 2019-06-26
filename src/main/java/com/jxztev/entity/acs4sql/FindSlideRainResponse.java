@@ -71,7 +71,7 @@ public class FindSlideRainResponse {
         this.endtm = endtm;
     }
 
-    @ApiModelProperty(value = "pp,这是一个别名变量。")
+    @ApiModelProperty(value = "pp,这是一个别名变量。", example = "1")
     private float pp;
 
     public float getPp() {
