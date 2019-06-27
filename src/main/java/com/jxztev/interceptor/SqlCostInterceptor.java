@@ -21,7 +21,7 @@ public class SqlCostInterceptor implements Interceptor {
         } finally {
             long endTime = System.currentTimeMillis();
             long sqlCost = endTime - startTime;
-            System.out.println("本次执行耗时 : [" + sqlCost + "ms ] ");
+        //    System.out.println("本次执行耗时 : [" + sqlCost + "ms ] ");
         }
     }
 

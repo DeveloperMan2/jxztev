@@ -55,9 +55,9 @@ public class RiverMapController {
       //  riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
         riverMapRequestParams.setEndTm(formatter.format(endTm));
 
-        System.out.println(riverwayStations);
-        System.out.println(formatter.format(bgTm));
-        System.out.println(formatter.format(endTm));
+     //   System.out.println(riverwayStations);
+       // System.out.println(formatter.format(bgTm));
+       // System.out.println(formatter.format(endTm));
 
         List<String> stationsList = new ArrayList<String>();
         if (null != stations && !stations.equals("")) {

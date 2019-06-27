@@ -133,7 +133,7 @@ public class RiverMapService implements IRiverMapService {
                         }
                     }
                 } catch (Exception e) {
-                    System.out.println(e);
+                   // System.out.println(e);
                 }
             }
 
