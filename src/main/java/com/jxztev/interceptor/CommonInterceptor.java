@@ -22,16 +22,16 @@ PS:以上3个方法，可以根据需求只重写其中任意一个或多个方�
 public class CommonInterceptor extends HandlerInterceptorAdapter {
 	@Override  
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {  
-		System.out.println("===========拦截器 preHandle");  
+	//	System.out.println("===========拦截器 preHandle");
 		return true;  
 	}  
 	@Override  
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {  
-		System.out.println("===========拦截器 postHandle");  
+	//	System.out.println("===========拦截器 postHandle");
 	}  
 	@Override  
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {  
-		System.out.println("===========拦截器 afterCompletion");  
+	//	System.out.println("===========拦截器 afterCompletion");
 	}  
 
 	/** @desc 该方法非必须重写，可以直接去掉。
@@ -40,6 +40,6 @@ public class CommonInterceptor extends HandlerInterceptorAdapter {
 	public void afterConcurrentHandlingStarted(
 			HttpServletRequest request, HttpServletResponse response, Object handler)
 					throws Exception {
-		System.out.println("HandlerInterceptor, afterConcurrentHandlingStarted......");
+		//System.out.println("HandlerInterceptor, afterConcurrentHandlingStarted......");
 	}
 }

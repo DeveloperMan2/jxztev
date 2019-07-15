@@ -262,7 +262,7 @@ public class DataFormatUtils {
 
     public static void main(String[] arg) {
         String g = "4254252.11255653";
-        System.out.println(g + "==" + getValid(g, 1));
+       // System.out.println(g + "==" + getValid(g, 1));
 
     }
 }
