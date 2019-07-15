@@ -64,6 +64,8 @@
         <property name="minEvictableIdleTimeMillis" value="300000"/>
 
         <property name="testWhileIdle" value="true"/>
+        <property name="keepAlive" value="true"/>
+        <property name="killWhenSocketReadTimeout" value="false"/>
 
         <!-- 这里建议配置为TRUE，防止取到的连接不可用 -->
         <property name="testOnBorrow" value="true"/>

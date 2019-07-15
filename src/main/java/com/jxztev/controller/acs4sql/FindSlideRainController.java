@@ -34,11 +34,11 @@ public class FindSlideRainController {
     @ResponseBody
     @ApiOperation(value = "select FindSlideRainResponse 对象", httpMethod = "GET", notes = "select FindSlideRainResponse对象", response = FindSlideRainResponse.class, responseContainer = "List", tags = "水雨情")
     public JSONObject findSlideRainHandler(
-            @ApiParam(value = "( = ?)hours,小时。", name = "hours")
+            @ApiParam(value = "( = ?)hours,小时。", name = "hours", example = "123")
             @RequestParam(required = false, name = "hours") Integer hours,
-            @ApiParam(value = "( = ?)period,周期。", name = "period")
+            @ApiParam(value = "( = ?)period,周期。", name = "period", example = "123")
             @RequestParam(required = false, name = "period") Integer period,
-            @ApiParam(value = "( > ?)drp。", name = "drp")
+            @ApiParam(value = "( > ?)drp。", name = "drp", example = "123")
             @RequestParam(required = false, name = "drp") float drp) {
         FindSlideRainRequest findSlideRainRequestParams = new FindSlideRainRequest();
         findSlideRainRequestParams.setHours(hours);

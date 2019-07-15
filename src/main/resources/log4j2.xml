@@ -7,7 +7,7 @@
     status : 这个用于设置log4j2自身内部的信息输出,可以不设置,当设置成trace时,会看到log4j2内部各种详细输出
     monitorInterval : Log4j能够自动检测修改配置文件和重新配置本身, 设置间隔秒数。此处表示每隔300秒重读一次配置文件
 -->
-<Configuration status="ERROR" monitorInterval="1800">
+<Configuration status="INFO" monitorInterval="1800">
     <properties>
         <property name="LOG_HOME">acs-logs</property>
         <property name="FILE_NAME">acs-run-log</property>
@@ -29,7 +29,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
+        <Root level="INFO">
             <!-- 这里是输入到控制台-->
             <AppenderRef ref="acs-console"/>
             <!-- 这里是输入到文件，很重要-->
