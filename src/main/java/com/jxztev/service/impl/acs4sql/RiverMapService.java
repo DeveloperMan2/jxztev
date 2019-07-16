@@ -90,7 +90,30 @@ public class RiverMapService implements IRiverMapService {
         return overTopWrz;
     }
 
-    public JSONObject riverMapHandler(RiverMapRequest riverMapRequestParams) {
+    public JSONObject riverMapHandler() {
+        //获取请求参数
+        Date bgTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", -1, 0), "yyyy-MM-dd HH:mm:ss");
+        Date endTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", 0, 1), "yyyy-MM-dd HH:mm:ss");
+        String stations = riverwayStations;
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        RiverMapRequest riverMapRequestParams = new RiverMapRequest();
+        riverMapRequestParams.setBgTm(formatter.format(bgTm));
+        //  riverMapRequestParams.setBgTm("2019-06-15 08:00:00");
+        riverMapRequestParams.setEndTm(formatter.format(endTm));
+
+        //   System.out.println(riverwayStations);
+        // System.out.println(formatter.format(bgTm));
+        // System.out.println(formatter.format(endTm));
+
+        List<String> stationsList = new ArrayList<String>();
+        if (null != stations && !stations.equals("")) {
+            for (String v : stations.split(",")) {
+                stationsList.add(v);
+            }
+            riverMapRequestParams.setStationsList(stationsList);
+        }
+
         JSONObject jo = new JSONObject();
         try {
             //组装页面数据模型

@@ -27,7 +27,7 @@
 
 	$(function(){
         ajaxHandler();
-       // setInterval(ajaxHandler(),300000);
+        setInterval("ajaxHandler()",300000);
 	})
 
     function ajaxHandler() {
@@ -108,7 +108,6 @@
     }
 
     function changePos() {
-        if (document.readyState === 'complete' && document.getElementById('construction')) {
             document.getElementById('construction').style.left = document.body.offsetWidth / 2 - 340;
             document.getElementById('construction').style.display = "";
             document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 60;
@@ -130,7 +129,6 @@
                     }
                 }
             }
-        }
     }
 	function listObj(sStcdt,sStnm,sYmdhm, sZ, sQ, sW, sS){
 		this.Stcdt = "S" + sStcdt;//站号

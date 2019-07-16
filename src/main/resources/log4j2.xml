@@ -29,7 +29,7 @@
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
+        <Root level="ERROR">
             <!-- 这里是输入到控制台-->
             <AppenderRef ref="acs-console"/>
             <!-- 这里是输入到文件，很重要-->
@@ -41,6 +41,6 @@
         <logger name="org.springframework" level="INFO"/>
         <logger name="springfox.documentation" level="INFO"/>
         -->
-        <logger name="druid.sql.ResultSet" level="INFO"/>
+        <logger name="druid.sql.ResultSet" level="ERROR"/>
     </Loggers>
 </Configuration>

@@ -75,7 +75,7 @@
         let dataResult = null, cachedList = null;
         $(function () {
             ajaxHandler();
-            setInterval(ajaxHandler(), 300000);
+            setInterval( "ajaxHandler()", 300000);
         })
 
         function ajaxHandler() {
@@ -133,7 +133,7 @@
                             '                <DIV onMouseOut="makeMenuHidden()" onMouseOver="changeMenuContent(\'S' + row['stcd'] + '\')"\n' +
                             '            id=\'W' + row['stcd'] + '\' style=" POSITION: absolute; Z-INDEX: 1; WIDTH: 8; HEIGHT: 8; CURSOR:hand; DISPLAY:none">\n' +
                             '                <DIV style="position:absolute;text-align:right;" class="' + row['style'] + '">\n' +
-                             row['z'] +
+                                              row['z'] +
                             '                </DIV>\n' +
                             '                <TABLE cellSpacing=0 cellPadding=0 border=0 width=\'40\' height=\'28\'>\n' +
                             '                <tr align="right" valign="bottom">\n' +
@@ -159,7 +159,6 @@
         }
 
         function changePos() {
-            if (document.readyState === 'complete' && document.getElementById('construction')) {
                 document.getElementById('construction').style.left = document.body.offsetWidth / 2 - 380;
                 document.getElementById('construction').style.display = "";
                 document.getElementById('tuli').style.left = document.body.offsetWidth / 2 + 60;
@@ -182,7 +181,6 @@
                         }
                     }
                 }
-            }
         }
 
         setInterval('changePos()', 100);
@@ -285,7 +283,7 @@
                 document.getElementById("q").innerText = cachedList[iRet].Q;
                 document.getElementById("w").innerText = cachedList[iRet].W;
                 document.getElementById("h").innerText = cachedList[iRet].H;
-                document.getElementById("s").innerText = cachedList[iRet].S;
+                document.getElementById("s").innerText = cachedList[iRet].S = cachedList[iRet].S == null ? "" : cachedList[iRet].S;
                 //以菜单形式显示该站的信息
                 displayMenu();
             } else {

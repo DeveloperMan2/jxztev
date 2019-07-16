@@ -1,5 +1,7 @@
 package com.jxztev.controller.acs4sql;
 
+import com.jxztev.dao.acs4sql.IMemberDao;
+import com.jxztev.entity.acs4sql.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -26,34 +28,42 @@ import com.jxztev.entity.acs4sql.RainSummarizeRequest;
 @Controller
 @RequestMapping(value = "/rainsummarize", method = {RequestMethod.GET, RequestMethod.POST})
 public class RainSummarizeController {
+//    @Autowired
+//    @Qualifier("rainSummarizeService")
+//    private IRainSummarizeService rainSummarizeService;
+
+
     @Autowired
-    @Qualifier("rainSummarizeService")
-    private IRainSummarizeService rainSummarizeService;
+    @Qualifier("memberDao")
+    IMemberDao memberDao;
 
     @RequestMapping(value = "/rainSummarizeHandler")
     @ResponseBody
     @ApiOperation(value = "select RainSummarizeResponse 对象", httpMethod = "GET", notes = "select RainSummarizeResponse对象", response = RainSummarizeResponse.class, responseContainer = "List", tags = "水雨情概述")
     public JSONObject rainSummarizeHandler() {
-        JSONObject jo = new JSONObject();
-        try {
-            //获取雨情概述
-            String rain = rainSummarizeService.getRainSummary("24");
-            //获取水库水情
-            String reservoir = rainSummarizeService.getReservoirSummary();
-            //获取河道水情
-            String river = rainSummarizeService.getRiverSummary();
-            JSONObject data = new JSONObject();
-            data.put("rain", rain);
-            data.put("reservoir",reservoir);
-            data.put("river",river);
-            jo.put("data", data);
-            jo.put("status", 1);// 1-成功， 0-失败
-            jo.put("msg", "执行成功");
-        } catch (Exception e) {
-            jo.put("data", null);
-            jo.put("status", 0);// 1-成功， 0-失败
-            jo.put("msg", e.getMessage());// msg-失败信息
-        }
+//        JSONObject jo = new JSONObject();
+//        try {
+//            //获取雨情概述
+//            String rain = rainSummarizeService.getRainSummary("24");
+//            //获取水库水情
+//            String reservoir = rainSummarizeService.getReservoirSummary();
+//            //获取河道水情
+//            String river = rainSummarizeService.getRiverSummary();
+//            JSONObject data = new JSONObject();
+//            data.put("rain", rain);
+//            data.put("reservoir",reservoir);
+//            data.put("river",river);
+//            jo.put("data", data);
+//            jo.put("status", 1);// 1-成功， 0-失败
+//            jo.put("msg", "执行成功");
+//        } catch (Exception e) {
+//            jo.put("data", null);
+//            jo.put("status", 0);// 1-成功， 0-失败
+//            jo.put("msg", e.getMessage());// msg-失败信息
+//        }
+        Member member = memberDao.get("rainSummarizeHandler");
+        JSONObject jo  = JSONObject.parseObject(member.getJsonData());
+//        System.out.println("查询结果输出："+member.getJsonData());
         return jo;
     }
 }

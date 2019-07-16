@@ -15,6 +15,6 @@ public interface IRiverMapService {
 
     List<RiverMapResponse> getOverTopWrz(List<RiverMapResponse> list);
 
-    JSONObject riverMapHandler(RiverMapRequest riverMapRequestParams);
+    JSONObject riverMapHandler();
 }
 
