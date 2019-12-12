@@ -21,7 +21,8 @@
 <script src="scripts/template-native.js"></script>
 <script language="javascript">
 
-    let dataResult = null, cachedList = null;
+    var dataResult = null;
+    var cachedList = null;
     var tempsrc="";//保存样式
     var tempstcd="";//保存站号
 
@@ -33,7 +34,7 @@
     function ajaxHandler() {
         $.ajax({
             type: "GET",
-            url: "http://localhost:8080/reservoirmap/reservoirMapHandler",
+            url: "http://localhost:8090/reservoirmap/reservoirMapHandler",
             success: function (response) {
                 if (response['status'] === 1) {
                     var data = response['data'];
@@ -116,7 +117,7 @@
             document.getElementById('skgs').style.display = "";
 
             if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
-                for (let i = 0; i < dataResult['rows'].length; i++) {
+                for (var i = 0; i < dataResult['rows'].length; i++) {
                     var row = dataResult['rows'][i];
                     try {
                         var stcdDom = document.getElementById('W' + row['stcd']);

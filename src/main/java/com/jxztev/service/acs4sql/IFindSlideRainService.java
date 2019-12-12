@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSONObject;
  * @desc FindSlideRain接口
  */
 public interface IFindSlideRainService {
-		    JSONObject findSlideRainHandler(FindSlideRainRequest findSlideRainRequestParams);
+		    JSONObject findSlideRainHandler();
         
 }
 

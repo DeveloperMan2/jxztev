@@ -22,7 +22,7 @@
             $('#rainTable').css('display', 'none');
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8080/rain/rainquery",
+                url: "http://localhost:8090/rain/rainquery",
                 data: {hour: $("input:radio:checked").val()},
                 success: function (response) {
                     if (response['status'] === 1) {
@@ -240,7 +240,7 @@
             </tr>
         </table>
 
-        <div style="folat:left;clear:right;width:180px;height:140px;overflow:auto;">
+        <div style="float:left;clear:right;width:180px;height:140px;overflow:auto;">
             <table id="rainTable" width=100% border=0 cellspacing=0 class=list>
                 <script id="rain-table-template" type="text/template">
                     <%for(var i = 0 ; i < maxRainList.length; i ++ ){

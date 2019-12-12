@@ -72,7 +72,8 @@
     <script src="scripts/jquery.min.js"></script>
     <script src="scripts/template-native.js"></script>
     <script type="text/javascript">
-        let dataResult = null, cachedList = null;
+        var dataResult = null;
+        var cachedList = null;
         $(function () {
             ajaxHandler();
             setInterval( "ajaxHandler()", 300000);
@@ -81,7 +82,7 @@
         function ajaxHandler() {
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8080/rivermap/riverMapHandler",
+                url: "http://localhost:8090/rivermap/riverMapHandler",
                 success: function (response) {
                     if (response['status'] === 1) {
                         var data = response['data'];
@@ -167,7 +168,7 @@
                 document.getElementById('hdgs').style.display = "";
 
                 if (dataResult && dataResult['rows'] && dataResult['rows'].length > 0) {
-                    for (let i = 0; i < dataResult['rows'].length; i++) {
+                    for (var i = 0; i < dataResult['rows'].length; i++) {
                         var row = dataResult['rows'][i];
                         try {
                             var stcdDom = document.getElementById('W' + row['stcd']);

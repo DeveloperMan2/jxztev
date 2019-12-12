@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+﻿
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="refresh" content="300">
+    <link rel="stylesheet" href="images/SimpleBlog.css" type="text/css">
+    <link rel="stylesheet" href="images/table.css" type="text/css">
+    <script type="text/javascript" src="scripts/jquery.min.js"></script>
+    <title>雨量预警信息--江西省山洪灾害预警系统暴雨预警</title>
+    <script type="text/javascript">
+        $(function () {
+            ajaxHandler();
+        })
+        setInterval("ajaxHandler()", 300000);
+
+        function ajaxHandler() {
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8090/findsliderain/findSlideRainHandler",
+                success: function (response) {
+                    if (response['status'] === 1) {
+                        $('#main').html(response['data'])
+                    }
+                }, error: function () {
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<div id="wrap">
+    <div id="header"></div>
+    <div id="main">
+    </div>
+</div>
+</body>
+</html>

@@ -25,7 +25,7 @@
             resultMap="FindSlideRainResultMap">
     <![CDATA[
 
-                  select a.stcd as stcd,b.stnm as stnm,b.cnnm as cnnm,b.stlc as stlc,starttm as starttm,endtm as endtm,pp as pp from stext_slideanlmax_r a left join stext_stbprp_v b on a.stcd = b.stcd where b.stnm is not null and hours = #{hours} and period = #{period} and pp > #{drp} and starttm >= sysdate - 1 and a.stcd in ( select stcd from st_stbprp_b where addvcd like '36%' ) order by pp desc
+                  select a.stcd as stcd,b.stnm as stnm,b.cnnm as cnnm,b.stlc as stlc, to_char(starttm,'mm"月"dd"日"HH24"时"') as starttm,to_char(endtm,'mm"月"dd"日"HH24"时"') as endtm,pp as pp from stext_slideanlmax_r a left join stext_stbprp_v b on a.stcd = b.stcd where b.stnm is not null and hours = #{hours} and period = #{period} and pp > #{drp} and starttm >= sysdate - 1 and a.stcd in ( select stcd from st_stbprp_b where addvcd like '36%' ) order by pp desc
 
         ]]>
 </select>

@@ -1,5 +1,7 @@
 package com.jxztev.controller.acs4sql;
 
+import com.jxztev.dao.acs4sql.IMemberDao;
+import com.jxztev.entity.acs4sql.Member;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -27,24 +29,20 @@ import com.jxztev.entity.acs4sql.FindSlideRainRequest;
 @RequestMapping(value = "/findsliderain", method = {RequestMethod.GET, RequestMethod.POST})
 public class FindSlideRainController {
     @Autowired
-    @Qualifier("findSlideRainService")
-    private IFindSlideRainService findSlideRainService;
+    @Qualifier("memberDao")
+    IMemberDao memberDao;
 
     @RequestMapping(value = "/findSlideRainHandler")
     @ResponseBody
     @ApiOperation(value = "select FindSlideRainResponse 对象", httpMethod = "GET", notes = "select FindSlideRainResponse对象", response = FindSlideRainResponse.class, responseContainer = "List", tags = "水雨情")
-    public JSONObject findSlideRainHandler(
-            @ApiParam(value = "( = ?)hours,小时。", name = "hours", example = "123")
-            @RequestParam(required = false, name = "hours") Integer hours,
-            @ApiParam(value = "( = ?)period,周期。", name = "period", example = "123")
-            @RequestParam(required = false, name = "period") Integer period,
-            @ApiParam(value = "( > ?)drp。", name = "drp", example = "123")
-            @RequestParam(required = false, name = "drp") float drp) {
-        FindSlideRainRequest findSlideRainRequestParams = new FindSlideRainRequest();
-        findSlideRainRequestParams.setHours(hours);
-        findSlideRainRequestParams.setPeriod(period);
-        findSlideRainRequestParams.setDrp(drp);
-        return findSlideRainService.findSlideRainHandler(findSlideRainRequestParams);
+    public JSONObject findSlideRainHandler() {
+        Member member = memberDao.get("findSlideRainHandler");
+        JSONObject jo  = new JSONObject();
+        if(member != null){
+            jo  = JSONObject.parseObject(member.getJsonData());
+            System.out.println("查询结果输出："+member.getJsonData());
+        }
+        return jo;
     }
 }
 
