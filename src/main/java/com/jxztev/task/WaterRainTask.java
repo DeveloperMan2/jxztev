@@ -53,7 +53,7 @@ public class WaterRainTask implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         try{
-            System.out.println("开始系统初始化查询数据");
+//            System.out.println("开始系统初始化查询数据");
             //雨情
             rainMapData();
             rainsummarize();
@@ -61,15 +61,15 @@ public class WaterRainTask implements InitializingBean {
             river();
             //山洪预警
             rmtesRain();
-            System.out.println("结束系统初始化查询数据");
+//            System.out.println("结束系统初始化查询数据");
         }catch (Exception e){
             throw  e;
         }
     }
 
-    @Scheduled(cron =  "0 0/5 * * * ? ") // "0 0/5 * * * ? " 间隔5分钟执行
+    @Scheduled(cron= "0 0/5 * * * ? ") // "0 0/5 * * * ? " 间隔5分钟执行
     public void taskCycle() {
-        System.out.println("使用SpringMVC框架配置定时任务");
+//        System.out.println("使用SpringMVC框架配置定时任务");
         //雨情
         rainMapData();
         rainsummarize();
