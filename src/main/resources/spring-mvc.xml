@@ -55,7 +55,7 @@
     <!-- 将 springSwaggerConfig加载到spring容器，属于Swagger1.0配置,2.0不需要 -->
     <!-- <bean class="com.mangofactory.swagger.configuration.SpringSwaggerConfig" /> -->
     <!-- 将自定义的swagger配置类加载到spring容器 -->
-    <bean class="com.jxztev.swagger.SwaggerConfig"/>
+    <!--<bean class="com.jxztev.swagger.SwaggerConfig"/>-->
 
     <!-- 对静态资源文件的访问,可通过SpringMVC自带的rerstful接口处理-->
     <mvc:default-servlet-handler/>
