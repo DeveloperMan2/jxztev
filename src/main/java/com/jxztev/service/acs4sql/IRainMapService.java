@@ -1,17 +1,11 @@
 package com.jxztev.service.acs4sql;
 
-import com.jxztev.entity.acs4sql.RainSummarizeResponse;
-import com.jxztev.entity.acs4sql.RiverMapResponse;
-
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
 
 /**
  * @desc RiverMap接口
  */
 public interface IRainMapService {
-    List<RainSummarizeResponse> getCountyRainList(String hourStr);
-    List<RainSummarizeResponse> getStationRainList(String hourStr, Float rainFlag);
-    List<RainSummarizeResponse> getMaxRainOrderRain(String hourStr, Integer countNum);
-
+    JSONObject getRainData(String hourStr);
 }
 

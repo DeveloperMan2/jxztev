@@ -154,7 +154,7 @@ public class DataFormatUtils {
 
         String rs = "";
 
-        if (obj == null) {
+        if (obj == null || obj.toString().length() == 0) {
 
             return rs;
 

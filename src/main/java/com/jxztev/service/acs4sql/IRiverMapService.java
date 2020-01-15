@@ -11,10 +11,7 @@ import java.util.List;
  * @desc RiverMap接口
  */
 public interface IRiverMapService {
-    List<RiverMapResponse> queryRiverMapList();
-
     List<RiverMapResponse> getOverTopWrz(List<RiverMapResponse> list);
-
     JSONObject riverMapHandler();
 }
 

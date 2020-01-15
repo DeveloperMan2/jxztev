@@ -1,66 +1,40 @@
 package com.jxztev.service.impl.acs4sql;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.jxztev.entity.acs4sql.ReservoirMapResponse;
+import com.jxztev.service.acs4sql.IReservoirMapService;
 import com.jxztev.utils.DataFormatUtils;
+import com.jxztev.utils.HttpUtils;
 import com.ztev.commons.date.DateUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.jxztev.service.acs4sql.IReservoirMapService;
-import com.jxztev.dao.acs4sql.IReservoirMapDao;
-
-	    import com.alibaba.fastjson.JSONArray;
-		    import com.jxztev.entity.acs4sql.ReservoirMapRequest;
-	
-
-import com.alibaba.fastjson.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
-* @desc ReservoirMap接口
-*/
+ * @desc ReservoirMap接口
+ */
 @Service("reservoirMapService")
 @Transactional(rollbackFor = Exception.class)
 public class ReservoirMapService implements IReservoirMapService {
 
-    //水库包含的站点
-    @Value("#{systemConfig[reservoir_stations]}")
-    private String reservoirStations;
+    //水库水情请求地址
+    @Value("#{systemConfig[reservoir_map_service]}")
+    private String reservoirMapServiceUrl;
 
-@Autowired
-@Qualifier("reservoirMapDao")
-private IReservoirMapDao reservoirMapDao;
 
-    public  List<ReservoirMapResponse> queryReservoirMapList() {
+    public List<ReservoirMapResponse> queryReservoirMapList() {
         Map<String, String> mapSS = new HashMap();
         mapSS.put("4", "↓");
         mapSS.put("5", "↑");
         mapSS.put("6", "—");
-        Date bgTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", -1, 0), "yyyy-MM-dd HH:mm:ss");
-        Date endTm = DateUtils.parseDate(DateUtils.getSpaceTime("yyyy-MM-dd HH:00:00", 0, 1), "yyyy-MM-dd HH:mm:ss");
-
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        ReservoirMapRequest reservoirMapRequestParams = new ReservoirMapRequest();
-        reservoirMapRequestParams.setBgTm(formatter.format(bgTm));
-      //  reservoirMapRequestParams.setBgTm("2019-06-23 16:00:00");
-        reservoirMapRequestParams.setEndTm(formatter.format(endTm));
-        reservoirMapRequestParams.setMd( DateUtils.getTodayString("MMdd"));
-
-        List<String> reservoirStationsList = new ArrayList<>();
-        if (null != reservoirStations && !reservoirStations.equals("")) {
-            for (String v : reservoirStations.split(",")) {
-                reservoirStationsList.add(v);
-            }
-            reservoirMapRequestParams.setStationsList(reservoirStationsList);
-        }
-        List<ReservoirMapResponse> reservoirMapResponseList = reservoirMapDao.reservoirMapHandler(reservoirMapRequestParams);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); //加上时间
+        JSONObject result = HttpUtils.doGet(reservoirMapServiceUrl);
+        JSONArray listJson = result.getJSONArray("data");
+        List<ReservoirMapResponse> reservoirMapResponseList = listJson.toJavaList(ReservoirMapResponse.class);
         for (ReservoirMapResponse reservoirItem : reservoirMapResponseList) {
             reservoirItem.setStnm(reservoirItem.getStnm().trim().replaceAll("/*", "").replaceAll("水库", ""));
             reservoirItem.setRz(DataFormatUtils.getRoundString(reservoirItem.getRz(), 2));
@@ -83,16 +57,18 @@ private IReservoirMapDao reservoirMapDao;
             }
             //必须捕获异常
             try {
-                if(reservoirItem.getTm() != null){
-                    Date date = simpleDateFormat.parse(reservoirItem.getTm());
-                    reservoirItem.setHTM(DateUtils.formatDate(date, "H点"));
-                    reservoirItem.setTm(DateUtils.formatDate(date, "M月d日 H点m分"));
+                if (reservoirItem.getTm() != null) {
+                    String tm = reservoirItem.getTm();
+                    String hour = tm.substring(tm.indexOf("日")+1,tm.indexOf("点")+1);
+                    reservoirItem.setHTM(hour);
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return reservoirMapResponseList;
     }
+
 
     public List<ReservoirMapResponse> getOverTopFLZ(List<ReservoirMapResponse> list) {
         List<ReservoirMapResponse> overTopFLZ = new ArrayList<>();

@@ -1,17 +1,15 @@
 package com.jxztev.task;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jxztev.dao.acs4sql.IMemberDao;
 import com.jxztev.entity.acs4sql.Member;
-import com.jxztev.entity.acs4sql.RainSummarizeResponse;
 import com.jxztev.entity.acs4sql.ReservoirMapResponse;
 import com.jxztev.service.acs4sql.IRainMapService;
 import com.jxztev.service.acs4sql.IRainSummarizeService;
 import com.jxztev.service.acs4sql.IReservoirMapService;
 import com.jxztev.service.acs4sql.IRiverMapService;
-import com.jxztev.service.impl.acs4sql.FindSlideRainService;
-import org.apache.commons.lang3.time.DateFormatUtils;
-import org.apache.commons.lang3.time.DateUtils;
+//import com.jxztev.service.impl.acs4sql.FindSlideRainService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -41,9 +38,9 @@ public class WaterRainTask implements InitializingBean {
     @Qualifier("riverMapService")
     private IRiverMapService riverMapService;
 
-    @Autowired
-    @Qualifier("findSlideRainService")
-    private FindSlideRainService findSlideRainService;
+//    @Autowired
+//    @Qualifier("findSlideRainService")
+//    private FindSlideRainService findSlideRainService;
 
     @Autowired
     @Qualifier("memberDao")
@@ -52,31 +49,29 @@ public class WaterRainTask implements InitializingBean {
     // 系统启动后执行，后面不执行，解决系统启动，查询没有数据问题
     @Override
     public void afterPropertiesSet() throws Exception {
-        try{
-//            System.out.println("开始系统初始化查询数据");
-            //雨情
-            rainMapData();
-            rainsummarize();
-            reservoir();
-            river();
-            //山洪预警
-            rmtesRain();
-//            System.out.println("结束系统初始化查询数据");
-        }catch (Exception e){
-            throw  e;
-        }
+        callHandler();
     }
 
-    @Scheduled(cron= "0 0/5 * * * ? ") // "0 0/5 * * * ? " 间隔5分钟执行
+    @Scheduled(cron = "0 0/5 * * * ? ") // "0 0/5 * * * ? " 间隔5分钟执行
     public void taskCycle() {
-//        System.out.println("使用SpringMVC框架配置定时任务");
-        //雨情
-        rainMapData();
-        rainsummarize();
-        reservoir();
-        river();
-        //山洪预警
-        rmtesRain();
+        callHandler();
+    }
+
+    private void callHandler(){
+        try {
+            //实时降雨
+            rainMapData();
+            //雨水情概述
+            rainsummarize();
+            //水库水情
+            reservoir();
+            //河道水情
+            river();
+            //山洪预警
+//            rmtesRain();
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     private void rainMapData() {
@@ -87,60 +82,58 @@ public class WaterRainTask implements InitializingBean {
         hourList.add(12);
         hourList.add(24);
         hourList.add(48);
-
         for (Integer hour : hourList) {
             jo = new JSONObject();
+            JSONObject rainData = rainMapService.getRainData(String.valueOf(hour));
+            if (rainData != null && rainData.getJSONObject("data") != null) {
+                JSONObject data = rainData.getJSONObject("data");
+                JSONArray countRainList = data.getJSONArray("countRainList");
+                JSONArray maxRainList = data.getJSONArray("maxRainList");
+                String queryTm = data.getString("time");
 
-            List<RainSummarizeResponse> countRainList = rainMapService.getCountyRainList(String.valueOf(hour));
-            List<RainSummarizeResponse> maxRainList = rainMapService.getMaxRainOrderRain(String.valueOf(hour), 20);
+                JSONObject storeData = new JSONObject();
+                storeData.put("countRainList", countRainList);
+                storeData.put("maxRainList", maxRainList);
+                storeData.put("queryTm", queryTm);
 
-            String bgTM = DateFormatUtils.format(DateUtils.addHours(new Date(), -hour), "M月d日H点");
-            String endTM = DateFormatUtils.format(new Date(), "d日H点");//结束时间
-            String queryTm = bgTM + "~" + endTM;
-
-            JSONObject data = new JSONObject();
-            data.put("countRainList", countRainList);
-            data.put("maxRainList", maxRainList);
-            data.put("queryTm", queryTm);
-
-            jo.put("data", data);
-            jo.put("status", 1);// 1-成功， 0-失败
-            jo.put("msg", "执行成功");
-            String jsonString = jo.toJSONString();
-            Member member = new Member();
-            String key = "rainquery_" + hour;
-            member.setId(key);
-            member.setJsonData(jsonString);
-            memberDao.delete(key);
-            memberDao.add(member);
-//            System.out.println(jsonString);
+                jo.put("data", storeData);
+                jo.put("status", 1);// 1-成功， 0-失败
+                jo.put("msg", "执行成功");
+                String jsonString = jo.toJSONString();
+                Member member = new Member();
+                String key = "rainquery_" + hour;
+                member.setId(key);
+                member.setJsonData(jsonString);
+                memberDao.delete(key);
+                memberDao.add(member);
+            }
         }
     }
 
     private void rainsummarize() {
         JSONObject jo = new JSONObject();
-        //获取雨情概述
-        String rain = rainSummarizeService.getRainSummary("24");
-        //获取水库水情
-        String reservoir = rainSummarizeService.getReservoirSummary();
-        //获取河道水情
-        String river = rainSummarizeService.getRiverSummary();
-        JSONObject data = new JSONObject();
-        data.put("rain", rain);
-        data.put("reservoir", reservoir);
-        data.put("river", river);
-        jo.put("data", data);
-        jo.put("status", 1);// 1-成功， 0-失败
-        jo.put("msg", "执行成功");
+        JSONObject resultJson = rainSummarizeService.getRainRiverReservoirSummary();
+       if(resultJson != null) {
+           JSONObject dataJson = resultJson.getJSONObject("data");
+           JSONObject data = new JSONObject();
+           //获取雨情概述
+           data.put("rain", dataJson.getString("rainOverviewInfo"));
+           //获取水库水情
+           data.put("reservoir", dataJson.getString("reservoirsOverviewInfo"));
+           //获取河道水情
+           data.put("river", dataJson.getString("riverOverviewInfo"));
+           jo.put("data", data);
+           jo.put("status", 1);// 1-成功， 0-失败
+           jo.put("msg", "执行成功");
 
-        String jsonString = jo.toJSONString();
-        Member member = new Member();
-        member.setId("rainSummarizeHandler");
-        member.setJsonData(jsonString);
-        String key = "rainSummarizeHandler";
-        memberDao.delete(key);
-        memberDao.add(member);
-//        System.out.println(jsonString);
+           String jsonString = jo.toJSONString();
+           Member member = new Member();
+           member.setId("rainSummarizeHandler");
+           member.setJsonData(jsonString);
+           String key = "rainSummarizeHandler";
+           memberDao.delete(key);
+           memberDao.add(member);
+       }
     }
 
     private void reservoir() {
@@ -198,7 +191,6 @@ public class WaterRainTask implements InitializingBean {
         String key = "reservoirMapHandler";
         memberDao.delete(key);
         memberDao.add(member);
-//        System.out.println(jsonString);
     }
 
     private void river() {
@@ -210,19 +202,18 @@ public class WaterRainTask implements InitializingBean {
         String key = "riverMapHandler";
         memberDao.delete(key);
         memberDao.add(member);
-//        System.out.println(jsonString);
     }
 
     //    山洪预警
-    private void rmtesRain() {
-        JSONObject jo = findSlideRainService.findSlideRainHandler();
-        String jsonString = jo.toJSONString();
-        Member member = new Member();
-        member.setId("findSlideRainHandler");
-        member.setJsonData(jsonString);
-        String key = "findSlideRainHandler";
-        memberDao.delete(key);
-        memberDao.add(member);
-    }
+//    private void rmtesRain() {
+//        JSONObject jo = findSlideRainService.findSlideRainHandler();
+//        String jsonString = jo.toJSONString();
+//        Member member = new Member();
+//        member.setId("findSlideRainHandler");
+//        member.setJsonData(jsonString);
+//        String key = "findSlideRainHandler";
+//        memberDao.delete(key);
+//        memberDao.add(member);
+//    }
 }
 

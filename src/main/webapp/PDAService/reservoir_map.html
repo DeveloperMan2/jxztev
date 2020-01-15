@@ -34,7 +34,7 @@
     function ajaxHandler() {
         $.ajax({
             type: "GET",
-            url: "http://localhost:8080/reservoirmap/reservoirMapHandler",
+            url: "http://localhost:8090/reservoirmap/reservoirMapHandler",
             success: function (response) {
                 if (response['status'] === 1) {
                     var data = response['data'];

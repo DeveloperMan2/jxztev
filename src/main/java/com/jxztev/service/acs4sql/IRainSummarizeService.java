@@ -8,8 +8,6 @@ import com.alibaba.fastjson.JSONObject;
  * @desc RainSummarize接口
  */
 public interface IRainSummarizeService {
-    String getRainSummary(String hourStr);
-    String getReservoirSummary();
-    String getRiverSummary();
+    JSONObject getRainRiverReservoirSummary();
 }
 
