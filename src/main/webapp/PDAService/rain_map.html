@@ -22,7 +22,7 @@
             $('#rainTable').css('display', 'none');
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8090/rain/rainquery",
+                url: "http://111.75.205.67:7080/syq/rain/rainquery",
                 data: {hour: $("input:radio:checked").val()},
                 success: function (response) {
                     if (response['status'] === 1) {

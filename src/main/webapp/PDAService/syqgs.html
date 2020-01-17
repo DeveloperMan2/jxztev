@@ -22,7 +22,7 @@
             $('#date').text(dateStr);
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8090/rainsummarize/rainSummarizeHandler",
+                url: "http://111.75.205.67:7080/syq/rainsummarize/rainSummarizeHandler",
                 success: function (response) {
                     if (response['status'] === 1) {
                         var data = response['data'];
