@@ -10,6 +10,7 @@ import com.jxztev.service.acs4sql.IRainSummarizeService;
 import com.jxztev.service.acs4sql.IReservoirMapService;
 import com.jxztev.service.acs4sql.IRiverMapService;
 //import com.jxztev.service.impl.acs4sql.FindSlideRainService;
+import com.jxztev.service.impl.acs4sql.FindSlideRainService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -38,9 +39,9 @@ public class WaterRainTask implements InitializingBean {
     @Qualifier("riverMapService")
     private IRiverMapService riverMapService;
 
-//    @Autowired
-//    @Qualifier("findSlideRainService")
-//    private FindSlideRainService findSlideRainService;
+    @Autowired
+    @Qualifier("findSlideRainService")
+    private FindSlideRainService findSlideRainService;
 
     @Autowired
     @Qualifier("memberDao")
@@ -68,7 +69,7 @@ public class WaterRainTask implements InitializingBean {
             //河道水情
             river();
             //山洪预警
-//            rmtesRain();
+            rmtesRain();
         } catch (Exception e) {
             throw e;
         }
@@ -205,15 +206,15 @@ public class WaterRainTask implements InitializingBean {
     }
 
     //    山洪预警
-//    private void rmtesRain() {
-//        JSONObject jo = findSlideRainService.findSlideRainHandler();
-//        String jsonString = jo.toJSONString();
-//        Member member = new Member();
-//        member.setId("findSlideRainHandler");
-//        member.setJsonData(jsonString);
-//        String key = "findSlideRainHandler";
-//        memberDao.delete(key);
-//        memberDao.add(member);
-//    }
+    private void rmtesRain() {
+        JSONObject jo = findSlideRainService.findSlideRainHandler();
+        String jsonString = jo.toJSONString();
+        Member member = new Member();
+        member.setId("findSlideRainHandler");
+        member.setJsonData(jsonString);
+        String key = "findSlideRainHandler";
+        memberDao.delete(key);
+        memberDao.add(member);
+    }
 }
 

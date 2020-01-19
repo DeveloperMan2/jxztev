@@ -17,7 +17,7 @@
         function ajaxHandler() {
             $.ajax({
                 type: "GET",
-                url: "http://localhost:8090/findsliderain/findSlideRainHandler",
+                url: "http://111.75.205.67:7080/syq/findsliderain/findSlideRainHandler",
                 success: function (response) {
                     if (response['status'] === 1) {
                         $('#main').html(response['data'])
