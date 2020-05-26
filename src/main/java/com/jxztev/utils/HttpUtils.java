@@ -72,7 +72,6 @@ public class HttpUtils {
             //HTTP响应头部信息，这里简单打印
             Header[] headers = getMethod.getResponseHeaders();
             byte[] responseBody = getMethod.getResponseBody();
-            System.out.println(new String(responseBody, charset));
             response = JSONObject.parseObject(new String(responseBody, charset));
 
         } catch (HttpException e) {
@@ -126,15 +125,14 @@ public class HttpUtils {
             //HTTP响应头部信息，这里简单打印
             Header[] headers = getMethod.getResponseHeaders();
             byte[] responseBody = getMethod.getResponseBody();
-            System.out.println(new String(responseBody, charset));
             response = JSONObject.parseObject(new String(responseBody, charset));
 
         } catch (HttpException e) {
-            System.out.println("请检查输入的URL!");
+//            System.out.println("请检查输入的URL!");
             e.printStackTrace();
         } catch (IOException e){
             //发生网络异常
-            System.out.println("发生网络异常!");
+//            System.out.println("发生网络异常!");
         }finally {
             getMethod.releaseConnection();
         }

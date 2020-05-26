@@ -9,7 +9,10 @@
             margin-top: 0px;
             margin-left: 0px;
             margin-right: 0px;
-            margin-bottom: 0px
+            margin-bottom: 0px;
+            min-width: 920px;
+            min-height: 768px;
+            overflow: auto;
         }
 
         TD {
@@ -298,7 +301,7 @@
             if (window.event.y + document.body.scrollTop + 52 + 40 > document.body.offsetHeight - 200) {
                 iY = iY + document.body.scrollTop - 100;
             } else {
-                iY = iY + 40;
+                iY = iY + 20;
             }
             //window.status = ' Y=' + iY + ' body height:' + document.body.offsetHeight + ' body width:' + document.body.offsetWidth + ' window.event.x:='+window.event.x+ ' window.event.y:='+window.event.y + ' document.body.scrollTop='+document.body.scrollTop;
             iX = document.body.offsetWidth / 2 - 260;

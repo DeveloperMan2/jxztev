@@ -26,11 +26,12 @@ public class FindSlideRainService implements IFindSlideRainService {
 
     public static Integer DEFAULT_PERIOD = Integer.valueOf(0);
 
+    @Override
     public JSONObject findSlideRainHandler() {
         JSONObject jo = new JSONObject();
         try {
 
-            JSONObject jsonResult = HttpUtils.doGet(mediumRiverUrl);
+            JSONObject jsonResult = HttpUtils.doGet(mediumRiverUrl,"rainwater-access-token","3579adc4-4be7-49bf-87be-f6bfff98606c");
             StringBuffer sb = new StringBuffer();
             if (jsonResult != null && jsonResult.getJSONObject("data") != null) {
                 JSONObject dataJson = jsonResult.getJSONObject("data");

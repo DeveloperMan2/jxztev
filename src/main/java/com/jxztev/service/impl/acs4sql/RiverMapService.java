@@ -79,7 +79,7 @@ public class RiverMapService implements IRiverMapService {
                     tMap.setStyle("normal");
                     tMap.setImg("normal.gif");
 
-                    tMap.setWptn(mapSS.get(tMap.getWptn()));
+//                    tMap.setWptn(tMap.getWptn());
 
                     if (tMap.getCwrz() != null) {
                         double CWRZ = DataFormatUtils.getRound(tMap.getCwrz(), 2).doubleValue();

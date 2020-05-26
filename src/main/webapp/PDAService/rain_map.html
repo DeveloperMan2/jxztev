@@ -4,6 +4,13 @@
     <title>最新雨情示意图</title>
     <link href="styles/default/map.css" rel="stylesheet" type="text/css">
     <link href="styles/default/list.css" rel="stylesheet" type="text/css">
+    <style>
+        body{
+            min-width: 920px;
+            min-height: 768px;
+            overflow: auto;
+        }
+    </style>
     <script type="text/javascript" src="scripts/template-native.js"></script>
     <script type="text/javascript" src="scripts/jquery.min.js"></script>
     <script type="text/javascript" src="scripts/rainPos.js"></script>
@@ -101,12 +108,12 @@
                 window.stnm.innerText = cachedList[iRet].Stnm + ' ' + cachedList[iRet].Dyrn + ' 毫米';
 
                 //显示菜单
-                var iY = window.event.y;
-                if (window.event.y + 90 > document.body.offsetHeight - 20)
+                var iY = window.event.pageY;
+                if (window.event.pageY + 90 > document.body.offsetHeight - 20)
                     iY = iY - 60;
                 else
                     iY = iY + 20;
-                var iX = window.event.x - 90;
+                var iX = window.event.pageX - 72;
                 $('#mesgMenu').css('left', iX);
                 $('#mesgMenu').css('top', iY);
                 $('#mesgMenu').css('zIndex', '10');
