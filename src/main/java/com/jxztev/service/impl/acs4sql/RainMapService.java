@@ -27,6 +27,7 @@ public class RainMapService implements IRainMapService {
      * @param hourStr
      * @return
      */
+    @Override
     public JSONObject getRainData(String hourStr) {
         JSONObject result = HttpUtils.doGet(rainMapServiceUrl + "&hour=" + hourStr);
 //        JSONArray maxRainListJson = result.getJSONObject("data").getJSONArray("maxRainList");

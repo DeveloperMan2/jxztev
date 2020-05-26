@@ -18,7 +18,7 @@ public class RainSummarizeService implements IRainSummarizeService {
     //河道水情请求地址
     @Value("#{systemConfig[rain_summarize]}")
     private String rainSummarizeUrl;
-
+    @Override
     public JSONObject getRainRiverReservoirSummary() {
         JSONObject result = HttpUtils.doGet(rainSummarizeUrl,"rainwater-access-token","3579adc4-4be7-49bf-87be-f6bfff98606c");
         return result;
