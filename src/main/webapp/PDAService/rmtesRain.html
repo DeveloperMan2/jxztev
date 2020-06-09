@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="images/table.css" type="text/css">
     <script type="text/javascript" src="scripts/jquery.min.js"></script>
     <title>江西省中小河流洪水预警</title>
+    <style type="text/css">
+        html,body
+        {
+            height: 100%;
+            margin: 0;
+            overflow-y: hidden;
+        }
+    </style>
     <script type="text/javascript">
         $(function () {
             ajaxHandler();
@@ -29,9 +37,9 @@
     </script>
 </head>
 <body>
-<div id="wrap">
+<div id="wrap" style="height: 100%">
     <div id="header"></div>
-    <div id="main">
+    <div id="main" style="overflow:auto ;height: calc(100vh - 137px);">
     </div>
 </div>
 </body>
